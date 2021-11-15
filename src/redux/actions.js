@@ -3,4 +3,5 @@
 
 Handle in all sub-reducers if necessary
 */
-export const APP_LOGIN_START = 'APP_LOGIN_START'
+export const ADD_DIET_ITEM = 'ADD_DIET_ITEM'
+export const ADD_SUPPLEMENT_ITEM = 'ADD_SUPPLEMENT_ITEM'
