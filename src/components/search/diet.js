@@ -49,6 +49,7 @@ export default DietSearchScreen = (props) => {
                 value={searchQuery}
                 style={{margin:20}}
             />
+            {searchQuery.length === 0 ? <Text style={{ fontSize: 16, fontWeight: '300', marginLeft: 20 }}>Recomended</Text> : null}
             <ScrollView contentContainerStyle={{height:'100%'}}>
                 {filteredItems.map((item,index)=>{
                     return(
