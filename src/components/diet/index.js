@@ -15,8 +15,8 @@ export default DietScreen = (props) => {
     const dispatch = useDispatch();
     const addedDiet = useSelector(getAddedDiet);
 
-    const onDelete = (index) =>{
-        const temp = addedDiet.filter((item, i) => i !== index)
+    const onDelete = (dietItem) =>{
+        const temp = addedDiet.filter((item, i) => dietItem.name !== item.name || dietItem.mealType !== item.mealType)
         dispatch(addDietItem(temp))
     }
     
@@ -36,7 +36,7 @@ export default DietScreen = (props) => {
                             return(
                                 <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop:10}}>
                                     <Text style={{ fontSize: 16, fontWeight: '300' }}>{dietItem?.name} - {dietItem?.calories} Kcal</Text>
-                                    <TouchableOpacity onPress={() => onDelete(index)}>
+                                    <TouchableOpacity onPress={() => onDelete(dietItem)}>
                                         <Ionicons name="ios-remove-circle" size={24} color="red" />
                                     </TouchableOpacity>
                                 </View>

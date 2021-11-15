@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { Button, Title, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
