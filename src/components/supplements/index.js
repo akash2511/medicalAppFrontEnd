@@ -23,7 +23,7 @@ export default SupplementsScreen = (props) => {
     return (
         <View>
             <ScrollView contentContainerStyle={{ height: '100%', marginTop:20 }}>
-                {addedSupplement?.map((dietItem, index) => {
+                {/* {addedSupplement ? addedSupplement?.map((dietItem, index) => {
                     return (
                         <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, marginHorizontal:20 }}>
                             <Text style={{ fontSize: 16, fontWeight: '300' }}>{dietItem?.name}</Text>
@@ -32,7 +32,7 @@ export default SupplementsScreen = (props) => {
                             </TouchableOpacity>
                         </View>
                     )
-                })}
+                }) : null} */}
                 <Button mode="outlined" onPress={() => props?.navigation?.navigate('Supplements Search')} style={{ marginHorizontal: 20, marginVertical: 20 }}>
                     {addedSupplement && addedSupplement?.length ? "ADD MORE SUPPLEMENTS" : "ADD SUPPLEMENTS"}
                 </Button>
