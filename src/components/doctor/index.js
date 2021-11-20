@@ -40,7 +40,7 @@ export default DoctorDashboard = (props) => {
                         <Paragraph>Treatment Start Date :</Paragraph>
                         <Paragraph>1st Nov 2021</Paragraph>
                     </View>
-                    <Button mode="outlined" onPress={() => { props?.navigation?.navigate("PatientDetails", { name: "Harry" })}} style={{ width: '40%' }}>
+                    <Button mode="outlined" onPress={() => { props?.navigation?.navigate("PatientDetailsScreen", { name: "Harry" })}} style={{ width: '40%' }}>
                         View
                     </Button>
                 </View>
@@ -53,7 +53,7 @@ export default DoctorDashboard = (props) => {
                         <Paragraph>Treatment Start Date :</Paragraph>
                         <Paragraph>12th Nov 2021</Paragraph>
                     </View>
-                    <Button mode="outlined" onPress={() => { props?.navigation?.navigate("PatientDetails", { name:"Edward"})}} style={{ width: '40%' }}>
+                    <Button mode="outlined" onPress={() => { props?.navigation?.navigate("PatientDetailsScreen", { name:"Edward"})}} style={{ width: '40%' }}>
                         View
                     </Button>
                 </View>

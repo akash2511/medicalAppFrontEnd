@@ -1,8 +1,6 @@
 //react
 import * as React from "react";
-import { Platform, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-
+import { Platform, Text } from "react-native";
 
 //libs
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -24,7 +22,7 @@ export default DoctorRoute = () => {
     >
       <Drawer.Screen
         name="Home"
-        component={DashboardStack}
+        component={DoctorDashboardStack}
         options={{
           unmountOnBlur: true,
         }}
@@ -33,8 +31,7 @@ export default DoctorRoute = () => {
   );
 };
 
-DashboardStack = () => {
-  const navigation = useNavigation();
+DoctorDashboardStack = () => {
   return (
     <Stack.Navigator
       screenOptions={() => {
@@ -42,14 +39,14 @@ DashboardStack = () => {
           headerShown: false
         }
       }}
-      initialRouteName="DashBoardScreen"
+      initialRouteName="DoctorDashBoardScreen"
     >
       <Stack.Screen
-        name="DashBoardScreen"
+        name="DoctorDashBoardScreen"
         component={DoctorDashboard}
       />
       <Stack.Screen
-        name="PatientDetails"
+        name="PatientDetailsScreen"
         component={MyPatientDetails}
       />
     </Stack.Navigator>

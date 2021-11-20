@@ -23,7 +23,8 @@ export default PatientRoute = () => {
         >
             <Drawer.Screen
                 name="Home"
-                component={DashboardStack}
+                titl
+                component={PatientDashboardStack}
                 options={{
                     unmountOnBlur: true,
                 }}
@@ -32,7 +33,7 @@ export default PatientRoute = () => {
     );
 };
 
-DashboardStack = () => {
+PatientDashboardStack = () => {
     const navigation = useNavigation();
     return (
         <Stack.Navigator
@@ -41,10 +42,10 @@ DashboardStack = () => {
                     headerShown: false
                 }
             }}
-            initialRouteName="DashBoardScreen"
+            initialRouteName="PatientDashBoardScreen"
         >
             <Stack.Screen
-                name="DashBoardScreen"
+                name="PatientDashBoardScreen"
                 component={DoctorDashboard}
             />
         </Stack.Navigator>
