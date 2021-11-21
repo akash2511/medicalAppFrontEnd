@@ -9,6 +9,7 @@ import { patientProfileTabs } from './assets'
 import MyPatientProfileDetails from './patientProfile'
 import DietScreen from './diet/index'
 import SupplementsScreen from './supplements/index'
+import DoctorMyPatientMedication from './medication'
 
 
 export default MyPatientDetails = (props) => {
@@ -23,6 +24,9 @@ export default MyPatientDetails = (props) => {
         }
         else if (selectedTab === "Supplements"){
             return <SupplementsScreen navigation={props?.navigation}/>
+        }
+        else if (selectedTab === "Medication"){
+            return <DoctorMyPatientMedication navigation={props?.navigation}/>
         }
     }
     return (
