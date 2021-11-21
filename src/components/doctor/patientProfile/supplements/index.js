@@ -38,7 +38,7 @@ export default SupplementsScreen = (props) => {
         if (isSupplementsLoading && isSupplementsLoading !== isSupplementsLoadingPrev && isSupplementsLoadingPrev !== undefined) {
             const selectedMedicineSupplments = selectedMedicine?.vitamins
             const filteredSuplements = supplements.filter((item) => selectedMedicineSupplments?.includes(item?._id))
-            dispatch(addDietItem(filteredSuplements))
+            dispatch(addSupplementItem(filteredSuplements))
         }
     }, [isSupplementsLoading])
 
