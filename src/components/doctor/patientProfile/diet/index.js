@@ -37,9 +37,8 @@ export default DietScreen = (props) => {
     useEffect(()=>{
         if (isDietLoading && isDietLoading !== isDietLoadingPrev && isDietLoadingPrev !== undefined) {
             const selectedMedicineDiet = selectedMedicine?.diet
-            if (selectedMedicineDiet?.includes(diets?._id)){
-                setFilteredDiet([diets])
-            }
+            const filteredDiets = diets.filter((item) => selectedMedicineDiet?.includes(item?._id))
+            setFilteredDiet(filteredDiets)
         }
     }, [isDietLoading])
     
