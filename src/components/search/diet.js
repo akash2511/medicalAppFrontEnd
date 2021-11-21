@@ -12,14 +12,16 @@ import { addDietItem } from '../../redux/actions/ui'
 
 //reducer
 import { getAddedDiet } from '../../redux/reducers/ui'
+import { getisDietLoading, geDiet } from '../../redux/reducers/diet'
 
 export default DietSearchScreen = (props) => {
     const dispatch = useDispatch();
-
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredItems, setFilteredItems] = useState(dietItems);
-
+    
     const addedDiet = useSelector(getAddedDiet);
+    const diet = useSelector(geDiet);
+    
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredItems, setFilteredItems] = useState(diet);
 
     const { mealType } = props?.route?.params;
     
@@ -27,10 +29,10 @@ export default DietSearchScreen = (props) => {
 
     useEffect(()=>{
         if (searchQuery && searchQuery.length){
-            setFilteredItems(dietItems.filter(item => item.name.includes(searchQuery)))
+            setFilteredItems(diet.filter(item => item.name.includes(searchQuery)))
         }
         else{
-            setFilteredItems(dietItems)
+            setFilteredItems(diet)
         }
     }, [searchQuery])
 

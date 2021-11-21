@@ -42,6 +42,6 @@ export const supplements = (state = initialState, action) => {
     }
 }
 
-export const isSupplementsLoading = state => state.supplements.isLoading
-export const geSupplements = state => state.supplements.allSupplements
+export const getisSupplementsLoading = state => state.supplements.isLoading
+export const getSupplements = state => state.supplements.allSupplements
 export const getSuccessMsg = state => state.supplements.successMsg

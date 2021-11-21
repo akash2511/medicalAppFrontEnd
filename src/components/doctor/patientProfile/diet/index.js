@@ -16,7 +16,6 @@ import { getisDietLoading,geDiet } from '../../../../redux/reducers/diet'
 import { usePrevious } from '../../../../helpers/utils'
 
 export default DietScreen = (props) => {
-    const [filteredDiet, setFilteredDiet] = useState([])
     const dispatch = useDispatch();
     const addedDiet = useSelector(getAddedDiet);
     const selectedMedicine = useSelector(getSelectedMedicine);
@@ -38,21 +37,21 @@ export default DietScreen = (props) => {
         if (isDietLoading && isDietLoading !== isDietLoadingPrev && isDietLoadingPrev !== undefined) {
             const selectedMedicineDiet = selectedMedicine?.diet
             const filteredDiets = diets.filter((item) => selectedMedicineDiet?.includes(item?._id))
-            setFilteredDiet(filteredDiets)
+            dispatch(addDietItem(filteredDiets))
         }
     }, [isDietLoading])
     
     return (
         <ScrollView contentContainerStyle={{ height: '100%' }}>
             {mealType.map((item,index)=>{
-                const filteredDietByMealType = filteredDiet.filter((diet) => diet?.type === item?.toLowerCase())
+                const filteredDietByMealType = addedDiet.filter((diet) => diet?.type === item?.toLowerCase())
                 return(
                     <View key={index} style={{ padding: 20, backgroundColor: '#fff', marginHorizontal: 20, marginTop: 20 }}>
                         <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text style={{ fontSize: 20, fontWeight: '500' }}>{item}</Text>
-                            <TouchableOpacity onPress={() => { props?.navigation?.navigate('DietSearch', { mealType: item}) }}>
+                            {/* <TouchableOpacity onPress={() => { props?.navigation?.navigate('DietSearch', { mealType: item}) }}>
                                 <Ionicons name="add-circle" size={24} color="green" />
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                         </View>
                         {filteredDietByMealType?.map((dietItem, index)=>{
                             return(

@@ -40,7 +40,7 @@ export const startFetchSupplements = () => {
 }
 
 const fetchSupplements = () => {
-    let url = '/api/events'
+    let url = backendUrl + '/api/vitamins&supplements'
     return fetch(url, {
         method: 'GET',
         headers: {
