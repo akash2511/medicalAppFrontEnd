@@ -1,6 +1,7 @@
 import {
     ADD_DIET_ITEM,
     ADD_SUPPLEMENT_ITEM,
+    ADD_SELECTED_MEDICINE_ITEM,
     APP_LOGIN,
     APP_LOGOUT
 } from '../actions'
@@ -9,6 +10,7 @@ const initialState = {
     diet:[],
     supplement:[],
     isLoggedIn:false,
+    selectedMedicine:{},
     username:"",
     password:"",
     userId:""
@@ -27,6 +29,10 @@ export const uiData = (state = initialState, action) => {
             return Object.assign({}, state, {
                 diet:action.data
             })
+        case ADD_SELECTED_MEDICINE_ITEM:
+            return Object.assign({}, state, {
+                selectedMedicine:action.data
+            })
         case ADD_SUPPLEMENT_ITEM:
             return Object.assign({}, state, {
                 supplement: action.data
@@ -40,5 +46,6 @@ export const uiData = (state = initialState, action) => {
 
 export const getAddedDiet = state => state.uiData.diet
 export const getAddedSupplement = state => state.uiData.supplement
+export const getSelectedMedicine = state => state.uiData.selectedMedicine
 export const getIsLoggedIn = state => state.uiData.isLoggedIn
 export const getUsername = state => state.uiData.username

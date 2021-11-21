@@ -1,40 +1,40 @@
 import {
     APP_LOGOUT,
-    MEDICATIONS_FETCH_START,
-    MEDICATIONS_DATA,
-    MEDICATIONS_FETCH_FAIL
+    SUPPLEMENTS_FETCH_START,
+    SUPPLEMENTS_DATA,
+    SUPPLEMENTS_FETCH_FAIL
 } from '../actions'
 
 const initialState = {
     isLoading: false,
     isErr: false,
     errMsg: '',
-    allMedications: [],
+    allSupplements: [],
     successMsg: ''
 }
 
-export const medications = (state = initialState, action) => {
+export const supplements = (state = initialState, action) => {
     switch (action.type) {
         case APP_LOGOUT:
             return initialState
-        case MEDICATIONS_FETCH_START:
+        case SUPPLEMENTS_FETCH_START:
             return Object.assign({}, state, {
                 isLoading: true,
                 isErr: false,
                 errMsg: '',
                 successMsg: ''
             })
-        case MEDICATIONS_FETCH_FAIL:
+        case SUPPLEMENTS_FETCH_FAIL:
             return Object.assign({}, state, {
                 isLoading: false,
                 isErr: true,
                 errMsg: action.errMsg,
                 successMsg: ''
             })
-        case MEDICATIONS_DATA:
+        case SUPPLEMENTS_DATA:
             return Object.assign({}, state, {
                 isLoading: false,
-                allMedications: action.data,
+                allSupplements: action.data,
                 successMsg: ''
             })
         default:
@@ -42,6 +42,6 @@ export const medications = (state = initialState, action) => {
     }
 }
 
-export const getIsMedicationsLoading = state => state.medications.isLoading
-export const geMedications = state => state.medications.allMedications
-export const getSuccessMsg = state => state.medications.successMsg
+export const isSupplementsLoading = state => state.supplements.isLoading
+export const geSupplements = state => state.supplements.allSupplements
+export const getSuccessMsg = state => state.supplements.successMsg

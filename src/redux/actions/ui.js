@@ -1,6 +1,7 @@
 import {
     ADD_DIET_ITEM,
     ADD_SUPPLEMENT_ITEM,
+    ADD_SELECTED_MEDICINE_ITEM,
     APP_LOGIN,
     APP_LOGOUT
 } from '../actions.js'
@@ -15,6 +16,13 @@ export const addDietItem = data => {
 export const addSupplementItem = data => {
     return {
         type: ADD_SUPPLEMENT_ITEM,
+        data
+    }
+}
+
+export const addSelectedMedicine = data => {
+    return {
+        type: ADD_SELECTED_MEDICINE_ITEM,
         data
     }
 }

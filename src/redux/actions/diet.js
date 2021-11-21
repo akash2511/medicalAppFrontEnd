@@ -1,7 +1,7 @@
 import {
-    MEDICATIONS_FETCH_START,
-    MEDICATIONS_DATA,
-    MEDICATIONS_FETCH_FAIL
+    DIET_FETCH_START,
+    DIET_DATA,
+    DIET_FETCH_FAIL
 } from '../actions.js'
 
 import { checkStatus, backendUrl } from '../../helpers/utils'
@@ -9,38 +9,38 @@ import { checkStatus, backendUrl } from '../../helpers/utils'
 // get requests
 
 const emitStart = () => ({
-    type: MEDICATIONS_FETCH_START
+    type: DIET_FETCH_START
 })
 
 const emitFail = errMsg => ({
-    type: MEDICATIONS_FETCH_FAIL,
+    type: DIET_FETCH_FAIL,
     errMsg
 })
 
-const emitMedicationsData = data => {
+const emitDietData = data => {
     return {
-        type: MEDICATIONS_DATA,
+        type: DIET_DATA,
         data
     }
 }
 
-// fetch medications 
-export const startFetchMedications = () => {
+// fetch Diet 
+export const startFetchDiet = () => {
     return async (dispatch) => {
         dispatch(emitStart())
         try {
-            const receivedData = await fetchMedications()
+            const receivedData = await fetchDiet()
             const validatedData = checkStatus(receivedData)
             const response = await validatedData.json()
-            dispatch(emitMedicationsData(response?.data))
+            dispatch(emitDietData(response?.data))
         } catch (err) {
             dispatch(emitFail())
         }
     }
 }
 
-const fetchMedications = () => {
-    let url = backendUrl + '/api/medicine'
+const fetchDiet = () => {
+    let url = backendUrl + '/api/diet'
     return fetch(url, {
         method: 'GET',
         headers: {
