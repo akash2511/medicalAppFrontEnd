@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { mealType } from '../../data'
+import { mealType } from '../../../../data'
 import { useDispatch, useSelector } from "react-redux";
 
 //actions
-import { addDietItem } from '../../redux/actions/ui'
+import { addDietItem } from '../../../../redux/actions/ui'
 
 //reducer
-import { getAddedDiet } from '../../redux/reducers/ui'
+import { getAddedDiet } from '../../../../redux/reducers/ui'
 
 export default DietScreen = (props) => {
 
@@ -28,7 +28,7 @@ export default DietScreen = (props) => {
                     <View key={index} style={{ padding: 20, backgroundColor: '#fff', marginHorizontal: 20, marginTop: 20 }}>
                         <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text style={{ fontSize: 20, fontWeight: '500' }}>{item}</Text>
-                            <TouchableOpacity onPress={() => { props?.navigation?.navigate('Diet Search', { mealType: item}) }}>
+                            <TouchableOpacity onPress={() => { props?.navigation?.navigate('DietSearch', { mealType: item}) }}>
                                 <Ionicons name="add-circle" size={24} color="green" />
                             </TouchableOpacity>
                         </View>

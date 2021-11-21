@@ -57,9 +57,6 @@ export default DoctorDashboard = (props) => {
                         View
                     </Button>
                 </View>
-                <Button mode="contained" onPress={() => dispatch(appLogout())} style={{ marginVertical: 20 }} labelStyle={{ color: "#fff" }}>
-                    {"LOGOUT"}
-                </Button>
             </ScrollView>
         </View>
     );

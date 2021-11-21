@@ -5,10 +5,10 @@ import { Button, Title, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
 
 //actions
-import { addSupplementItem } from '../../redux/actions/ui'
+import { addSupplementItem } from '../../../../redux/actions/ui'
 
 //reducer
-import { getAddedSupplement } from '../../redux/reducers/ui'
+import { getAddedSupplement } from '../../../../redux/reducers/ui'
 
 export default SupplementsScreen = (props) => {
 
@@ -22,8 +22,8 @@ export default SupplementsScreen = (props) => {
 
     return (
         <View>
-            <ScrollView contentContainerStyle={{ height: '100%', marginTop:20 }}>
-                {/* {addedSupplement ? addedSupplement?.map((dietItem, index) => {
+            <ScrollView contentContainerStyle={{marginTop:20 }}>
+                {addedSupplement ? addedSupplement?.map((dietItem, index) => {
                     return (
                         <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, marginHorizontal:20 }}>
                             <Text style={{ fontSize: 16, fontWeight: '300' }}>{dietItem?.name}</Text>
@@ -32,8 +32,8 @@ export default SupplementsScreen = (props) => {
                             </TouchableOpacity>
                         </View>
                     )
-                }) : null} */}
-                <Button mode="outlined" onPress={() => props?.navigation?.navigate('Supplements Search')} style={{ marginHorizontal: 20, marginVertical: 20 }}>
+                }) : null}
+                <Button mode="outlined" onPress={() => props?.navigation?.navigate('SupplementsSearch')} style={{ marginHorizontal: 20, marginVertical: 20 }}>
                     {addedSupplement && addedSupplement?.length ? "ADD MORE SUPPLEMENTS" : "ADD SUPPLEMENTS"}
                 </Button>
             </ScrollView>

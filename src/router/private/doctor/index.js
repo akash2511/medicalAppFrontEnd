@@ -8,7 +8,10 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 
 //components
 import DoctorDashboard from '../../../components/doctor'
-import MyPatientDetails from '../../../components/doctor/patientProfile'
+import DoctorMyProfile from '../../../components/doctor/myProflie'
+import MyPatientDetails from '../../../components/doctor/patientProfile/index'
+import DietSearchScreen from '../../../components/search/diet'
+import SupplementSearchScreen from '../../../components/search/supplement'
 
 //config
 const Drawer = createDrawerNavigator();
@@ -23,6 +26,13 @@ export default DoctorRoute = () => {
       <Drawer.Screen
         name="Home"
         component={DoctorDashboardStack}
+        options={{
+          unmountOnBlur: true,
+        }}
+      />
+      <Drawer.Screen
+        name="My Profile"
+        component={DoctorMyProfile}
         options={{
           unmountOnBlur: true,
         }}
@@ -49,6 +59,8 @@ DoctorDashboardStack = () => {
         name="PatientDetailsScreen"
         component={MyPatientDetails}
       />
+      <Stack.Screen name="DietSearch" component={DietSearchScreen} />
+      <Stack.Screen name="SupplementsSearch" component={SupplementSearchScreen} />
     </Stack.Navigator>
   );
 };

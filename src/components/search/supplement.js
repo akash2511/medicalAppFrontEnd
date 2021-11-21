@@ -13,7 +13,7 @@ import { addSupplementItem } from '../../redux/actions/ui'
 //reducer
 import { getAddedSupplement } from '../../redux/reducers/ui'
 
-export default DietSearchScreen = (props) => {
+export default SupplementSearchScreen = (props) => {
     const dispatch = useDispatch();
 
     const [searchQuery, setSearchQuery] = useState('');
