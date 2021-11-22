@@ -75,7 +75,7 @@ export default MyPatientProfileDetails = (props) => {
                 <Paragraph>Last Visit Date : 12th Nov 2021</Paragraph>
                 <Paragraph>Age : 42</Paragraph>
             </View>
-            <LinearGradient colors={['#fb8c00', '#ffa726']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
+            <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
                 <VictoryChart polar
                     theme={VictoryTheme.material}
                     animate={{
@@ -85,17 +85,19 @@ export default MyPatientProfileDetails = (props) => {
                     style={{
                         parent: {
                             border: "1px solid #ccc",
-                            marginLeft:-20
+                            marginLeft:-20,
+                            color:"#fff"
                         }
                     }}
                 >
                     <VictoryArea
                         style={{
                             data: {
-                                fill: "#c43a31", fillOpacity: 0.5, stroke: "#c43a31", strokeWidth: 1
+                                fill: "#c43a31", fillOpacity: 0.7, stroke: "#c43a31", strokeWidth: 1
                             },
                             labels: {
-                                fontSize: 15
+                                fontSize: 15,
+                                color:"#fff"
                             },
                             parent: { border: "1px solid #000" }
                         }}
@@ -109,10 +111,11 @@ export default MyPatientProfileDetails = (props) => {
                     <VictoryArea
                         style={{
                             data: {
-                                fill: "#27F03F", fillOpacity: 0.5, stroke: "#c43a31", strokeWidth: 1
+                                fill: "#27F03F", fillOpacity: 0.7, stroke: "#c43a31", strokeWidth: 1
                             },
                             labels: {
-                                fontSize: 15
+                                fontSize: 15,
+                                color: "#fff"
                             },
                             parent: { border: "1px solid #000" }
                         }}
@@ -126,10 +129,11 @@ export default MyPatientProfileDetails = (props) => {
                     <VictoryArea
                         style={{
                             data: {
-                                fill: "#3058EE", fillOpacity: 0.5, stroke: "#c43a31", strokeWidth: 1
+                                fill: "#3058EE", fillOpacity: 0.7, stroke: "#c43a31", strokeWidth: 1
                             },
                             labels: {
-                                fontSize: 15
+                                fontSize: 15,
+                                color: "#fff"
                             },
                             parent: { border: "1px solid #000" }
                         }}
@@ -137,7 +141,7 @@ export default MyPatientProfileDetails = (props) => {
                             { x: 1, y: 10, y0: 0 },
                             { x: 2, y: 8, y0: 0 },
                             { x: 3, y: 3, y0: 0 },
-                            { x: 4, y: 2, y0: 0 },
+                            { x: 4, y: 6, y0: 0 },
                             { x: 5, y: 8, y0: 0 }
                         ]} />
                     <VictoryPolarAxis />

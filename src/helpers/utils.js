@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 
 // export const backendUrl = 'http://dev-v3.sealtabs.com:3004'
 // export const backendUrlNew = 'http://dev-v3.sealtabs.com:3004'
-export const backendUrl = 'http://192.168.101.175:3004'
+export const backendUrl = 'http://03b9-2406-7400-63-1a40-00-102.ngrok.io:3004'
 
 // /* API Response Helpers */
 //
