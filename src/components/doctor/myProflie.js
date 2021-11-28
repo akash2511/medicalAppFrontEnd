@@ -4,15 +4,15 @@ import { Button } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
 
 //actions
-import { appLogout } from '../../redux/actions/ui'
+import { emitLogoutaction } from '../../redux/actions/account'
 
 //reducers
-import { getUsername } from '../../redux/reducers/ui'
+import { getUserName } from '../../redux/reducers/account'
 
 export default DoctorMyProfile = (props) => {
     const dispatch = useDispatch();
 
-    const username = useSelector(getUsername)
+    const username = useSelector(getUserName)
 
     return (
         <View>
@@ -20,7 +20,7 @@ export default DoctorMyProfile = (props) => {
                 <View style={{ marginTop: 20 }}>
                     <Text style={{ fontWeight: "bold", color: "#000", marginBottom: 20, fontSize: 30 }}>Name: {username}</Text>
                 </View>
-                <Button mode="contained" onPress={() => dispatch(appLogout())} style={{ marginVertical: 20 }} labelStyle={{ color: "#fff" }}>
+                <Button mode="contained" onPress={() => dispatch(emitLogoutaction())} style={{ marginVertical: 20 }} labelStyle={{ color: "#fff" }}>
                     {"LOGOUT"}
                 </Button>
             </ScrollView>

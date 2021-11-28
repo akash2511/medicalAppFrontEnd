@@ -9,42 +9,19 @@ import { addDietItem } from '../../../../redux/actions/ui'
 import { startFetchDiet } from '../../../../redux/actions/diet'
 
 //reducer
-import { getAddedDiet, getSelectedMedicine } from '../../../../redux/reducers/ui'
-import { getisDietLoading,geDiet } from '../../../../redux/reducers/diet'
+// import { getAddedDiet, getSelectedMedicine } from '../../../../redux/reducers/ui'
+// import { getisDietLoading,geDiet } from '../../../../redux/reducers/diet'
 
 //helpers
 import { usePrevious } from '../../../../helpers/utils'
 
 export default DietScreen = (props) => {
-    const dispatch = useDispatch();
-    const addedDiet = useSelector(getAddedDiet);
-    const selectedMedicine = useSelector(getSelectedMedicine);
-    const isDietLoading = useSelector(getisDietLoading);
-    const isDietLoadingPrev = usePrevious(isDietLoading);
-    const diets = useSelector(geDiet);
-
-    const onDelete = (dietItem) =>{
-        const temp = addedDiet.filter((item, i) => dietItem.name !== item.name || dietItem.mealType !== item.mealType)
-        dispatch(addDietItem(temp))
-    }
-
-    useEffect(()=>{
-        dispatch(startFetchDiet())
-    },[])
-
-
-    useEffect(()=>{
-        if (isDietLoading && isDietLoading !== isDietLoadingPrev && isDietLoadingPrev !== undefined) {
-            const selectedMedicineDiet = selectedMedicine?.diet
-            const filteredDiets = diets.filter((item) => selectedMedicineDiet?.includes(item?._id))
-            dispatch(addDietItem(filteredDiets))
-        }
-    }, [isDietLoading])
+    const dispatch = useDispatch()
     
     return (
         <ScrollView contentContainerStyle={{ height: '100%' }}>
-            {mealType.map((item,index)=>{
-                const filteredDietByMealType = addedDiet.filter((diet) => diet?.type === item?.toLowerCase())
+            {[].map((item,index)=>{
+                const filteredDietByMealType = [].filter((diet) => diet?.type === item?.toLowerCase())
                 return(
                     <View key={index} style={{ padding: 20, backgroundColor: '#fff', marginHorizontal: 20, marginTop: 20 }}>
                         <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

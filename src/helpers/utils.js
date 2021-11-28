@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
+import customError from 'custom-error'
 
-// export const backendUrl = 'http://dev-v3.sealtabs.com:3004'
-// export const backendUrlNew = 'http://dev-v3.sealtabs.com:3004'
-export const backendUrl = 'http://03b9-2406-7400-63-1a40-00-102.ngrok.io:3004'
+export const AuthError = customError('AuthError')
+export const ApiError = customError('ApiError')
+
+export const backendUrl = 'http://localhost:3004'
 
 // /* API Response Helpers */
 //

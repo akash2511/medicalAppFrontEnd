@@ -1,7 +1,7 @@
 import {
-    MEDICATIONS_FETCH_START,
-    MEDICATIONS_DATA,
-    MEDICATIONS_FETCH_FAIL
+    PATIENT_FETCH_START,
+    PATIENT_DATA,
+    PATIENT_FETCH_FAIL
 } from '../actions.js'
 
 import { checkStatus, backendUrl, composeAuth } from '../../helpers/utils'
@@ -9,39 +9,39 @@ import { checkStatus, backendUrl, composeAuth } from '../../helpers/utils'
 // get requests
 
 const emitStart = () => ({
-    type: MEDICATIONS_FETCH_START
+    type: PATIENT_FETCH_START
 })
 
 const emitFail = errMsg => ({
-    type: MEDICATIONS_FETCH_FAIL,
+    type: PATIENT_FETCH_FAIL,
     errMsg
 })
 
-const emitMedicationsData = data => {
+const emitPatientData = data => {
     return {
-        type: MEDICATIONS_DATA,
+        type: PATIENT_DATA,
         data
     }
 }
 
 // fetch medications 
-export const startFetchMedications = (data) => {
+export const startFetchPatientList = (data) => {
     return async (dispatch) => {
         dispatch(emitStart())
         try {
-            const receivedData = await fetchMedications(data)
+            const receivedData = await fetchPatientList(data)
             const validatedData = checkStatus(receivedData)
             const response = await validatedData.json()
-            dispatch(emitMedicationsData(response?.data))
+            dispatch(emitPatientData(response?.data))
         } catch (err) {
             dispatch(emitFail())
         }
     }
 }
 
-const fetchMedications = ({jwt}) => {
+const fetchPatientList = ({jwt}) => {
     let Authorization = composeAuth(jwt)
-    let url = backendUrl + '/api/medication'
+    let url = backendUrl + '/api/profile/patients'
     return fetch(url, {
         method: 'GET',
         headers: {

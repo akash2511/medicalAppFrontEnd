@@ -10,7 +10,7 @@ import MainRoute from './private'
 import Login from '../components/account/login'
 
 //reducers
-import { getIsLoggedIn } from '../redux/reducers/ui'
+import { getLoggedIn } from '../redux/reducers/account'
 
 //config
 const Stack = createNativeStackNavigator();
@@ -28,7 +28,7 @@ const LoginStack = () => {
 }
 
 export default RouterMain = () => {
-    const isLoggedIn = useSelector(getIsLoggedIn)
+    const isLoggedIn = useSelector(getLoggedIn)
     return (
         isLoggedIn ? <MainRoute/>
         : <LoginStack/>

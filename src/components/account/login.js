@@ -1,15 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Image, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ActivityIndicator } from 'react-native';
 
 //libs
 import { useDispatch, useSelector } from 'react-redux'
 import { TextInput, Button } from 'react-native-paper';
 
 //actions
-import { appLogin } from '../../redux/actions/ui'
+import { emitLogin } from '../../redux/actions/account'
 
 //reducers
-import { getIsLoggedIn } from '../../redux/reducers/ui'
+import {getError,getMsg,getLoggedIn,getisLoading } from '../../redux/reducers/account'
+
+//helpers
+import { usePrevious } from '../../helpers/utils'
 
 
 Login = (props) => {
@@ -22,13 +25,17 @@ Login = (props) => {
 
     //redux
     const dispatch = useDispatch()
+    const isLoggedIn = useSelector(getLoggedIn)
+    const isLoadingLogin = useSelector(getisLoading)
+    const isLoadingLoginPrev = usePrevious(isLoadingLogin)
+    const msg = useSelector(getMsg)
+    const loginError = useSelector(getError)
 
     //effects
+
     createlogin = () => {
         if (username && password) {
-            if ((username.toLowerCase() == "doctor" || username.toLowerCase() == "patient") && password === "root"){
-                dispatch(appLogin({ username: username.toLowerCase(), password}))
-            }
+            dispatch(emitLogin(username, password))
         }
         else {
             if (!username) {
@@ -114,9 +121,10 @@ Login = (props) => {
                         <Text extraStyle={{ fontWeight: 'regular', color: '#ff2459', marginLeft: 30 }}>{passwordError && passwordErrorText ? passwordErrorText : " "}</Text>
                     </View>
                     <View style={{ marginBottom: 10 }}>
-                        <Button mode="contained" onPress={() => createlogin()} style={{ marginHorizontal: 20, marginVertical: 20 }} labelStyle={{color:"#fff"}}>
+                        {isLoadingLogin ? <ActivityIndicator/> : <Button mode="contained" onPress={() => createlogin()} style={{ marginHorizontal: 20, marginVertical: 20 }} labelStyle={{color:"#fff"}}>
                             {"LOGIN"}
-                        </Button>
+                        </Button>}
+                        {msg && msg?.length ? <Text extraStyle={{ fontWeight: 'regular', color: '#ff2459' }}>{msg}</Text> : null}
                     </View>
                 </View>
             </View>

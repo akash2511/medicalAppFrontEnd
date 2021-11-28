@@ -19,12 +19,12 @@ VictoryPolarAxis } from "victory-native";
 import { appLogout } from '../../../redux/actions/ui'
 
 //reducers
-import { getUsername } from '../../../redux/reducers/ui'
+import { getUserName } from '../../../redux/reducers/account'
 
 export default MyPatientProfileDetails = (props) => {
     const dispatch = useDispatch();
 
-    const username = useSelector(getUsername)
+    const username = useSelector(getUserName)
 
     const screenWidth = Dimensions.get('window').width - 40
 

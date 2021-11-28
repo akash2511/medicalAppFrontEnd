@@ -1,6 +1,6 @@
 //react
 import React from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 
 //libs
 import { Button } from 'react-native-paper';
@@ -11,26 +11,26 @@ import DoctorRoute from './doctor'
 import PatientRoute from './patient'
 
 //actions
-import { appLogout } from '../../redux/actions/ui'
+import { emitLogoutaction } from '../../redux/actions/account'
 
 //reducers
-import { getUsername } from '../../redux/reducers/ui'
+import { getLevel } from '../../redux/reducers/account'
 
 
 export default MainRoute = ({navigation}) => {
     const dispatch = useDispatch()
-    const username = useSelector(getUsername)
+    const level = useSelector(getLevel)
 
-    if (username === "doctor"){
+    if (level === "doctor"){
         return <DoctorRoute />
     }
-    else if (username === "patient"){
+    else if (level === "patient"){
         return <PatientRoute/>
     }
     else{
         return <View>
             <Text>Login Is under construction</Text>
-            <Button mode="contained" onPress={() => dispatch(appLogout())} style={{ marginHorizontal: 20, marginVertical: 20 }} labelStyle={{ color: "#fff" }}>
+            <Button mode="contained" onPress={() => dispatch(emitLogoutaction())} style={{ marginHorizontal: 20, marginVertical: 20 }} labelStyle={{ color: "#fff" }}>
                 {"LOGOUT"}
             </Button>
         </View>
