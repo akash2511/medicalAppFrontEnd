@@ -3,6 +3,7 @@ import { ScrollView, View, Text, ActivityIndicator } from 'react-native';
 import { Searchbar } from 'react-native-paper';
 import { Button, Title, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
+import { useIsFocused } from '@react-navigation/native';
 
 //actions
 import { startFetchMedications } from '../../redux/actions/medication'
@@ -18,6 +19,7 @@ import { usePrevious } from '../../helpers/utils'
 
 export default MedicationSearchScreen = (props) => {
     const dispatch = useDispatch();
+    const isFocused = useIsFocused();
     
     const isMedicationsLoading = useSelector(getIsMedicationsLoading);
     const medications = useSelector(geMedications);
@@ -33,9 +35,11 @@ export default MedicationSearchScreen = (props) => {
     const onChangeSearch = query => setSearchQuery(query);
 
     useEffect(()=>{
-        props?.navigation?.setOptions({ title: "Medication" })
-        dispatch(startFetchMedications({jwt}))
-    }, [])
+        if (isFocused) {
+            props?.navigation?.setOptions({ title: "Medication" })
+            dispatch(startFetchMedications({jwt}))
+        }
+    }, [isFocused])
 
     useEffect(()=>{
         if (!isPrescriptionLoading && isPrescriptionLoading !== isPrescriptionLoadingPrev && isPrescriptionLoadingPrev !== undefined) {
@@ -50,7 +54,7 @@ export default MedicationSearchScreen = (props) => {
         else{
             setFilteredItems(medications)
         }
-    }, [searchQuery])
+    }, [searchQuery, medications])
 
     const onAddItem = (item) => {
         const data = {
@@ -62,7 +66,7 @@ export default MedicationSearchScreen = (props) => {
     }
 
     return (
-        isMedicationsLoading || isPrescriptionLoading? <ActivityIndicator/> : <View>
+        <View>
             <Button mode="text" icon="chevron-left" onPress={() => props?.navigation?.goBack()} style={{ marginTop: 10, width: '30%', marginHorizontal: 20 }} labelStyle={{ color: "#000" }}>
                 {"GO BACK"}
             </Button>
@@ -73,6 +77,7 @@ export default MedicationSearchScreen = (props) => {
                 style={{margin:20}}
             />
             {searchQuery.length === 0 ? <Text style={{ fontSize: 16, fontWeight: '300', marginLeft: 20 }}>Recomended</Text> : null}
+            {isMedicationsLoading || isPrescriptionLoading? <ActivityIndicator /> :
             <ScrollView contentContainerStyle={{height:'100%'}}>
                 {filteredItems.map((item,index)=>{
                     return(
@@ -91,7 +96,7 @@ export default MedicationSearchScreen = (props) => {
                         </View>
                     )
                 })}
-            </ScrollView>
+            </ScrollView>}
         </View>
     );
 };
