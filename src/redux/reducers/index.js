@@ -10,6 +10,8 @@ import { uiData } from './ui'
 import { medications } from './medication'
 import { diet } from './diet'
 import { supplements } from './supplements'
+import { patient } from './patient'
+import { exercise } from './exercise'
 
 export const RootReducer = combineReducers({
     profile,
@@ -20,5 +22,7 @@ export const RootReducer = combineReducers({
     uiData,
     medications,
     diet,
-    supplements
+    supplements,
+    patient,
+    exercise
 })

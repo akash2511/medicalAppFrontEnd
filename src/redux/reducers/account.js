@@ -2,6 +2,9 @@ import {
   APP_LOGIN_START,
   APP_LOGIN,
   APP_LOGIN_FAIL,
+  APP_GET_PROFILE_START,
+  APP_GET_PROFILE,
+  APP_GET_PROFILE_FAIL,
   APP_LOGOUT,
 } from '../actions'
 
@@ -14,7 +17,9 @@ const initialState = {
   userId:"",
   roles:[],
   userName:"",
-  level:""
+  level:"",
+  isLoadingGetProfile:false,
+  profileDetails:{}
 }
 
 export const accounts = (state = initialState, action) => {
@@ -49,6 +54,22 @@ export const accounts = (state = initialState, action) => {
         level: "",
         message: 'Incorrect username/password. Please try again.'
       })
+    case APP_GET_PROFILE_START:
+      return Object.assign({}, state, {
+        isLoadingGetProfile: true,
+        error: false,
+      })
+    case APP_GET_PROFILE_FAIL:
+      return Object.assign({}, state, {
+        isLoadingGetProfile: false,
+        error: true,
+      })
+    case APP_GET_PROFILE:
+      return Object.assign({}, state, {
+        isLoadingGetProfile: false,
+        profileDetails: action.data,
+        error: false,
+      })
     case APP_LOGOUT:
       return initialState
     default:
@@ -65,3 +86,5 @@ export const getUserId = state => state.accounts.userId
 export const getRoles = state => state.accounts.roles
 export const getUserName = state => state.accounts.userName
 export const getLevel = state => state.accounts.level
+export const getIsLoadingGetProfile = state => state.accounts.isLoadingGetProfile
+export const getProfileDetails = state => state.accounts.profileDetails

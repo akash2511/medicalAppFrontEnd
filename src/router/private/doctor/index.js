@@ -1,8 +1,7 @@
 //react
 import * as React from "react";
-import { Platform, Text } from "react-native";
-import { IconButton, Colors } from 'react-native-paper';
-import { useDrawerStatus } from '@react-navigation/drawer';
+import { Platform } from "react-native";
+import { IconButton } from 'react-native-paper';
 
 //libs
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -38,7 +37,7 @@ export default DoctorRoute = () => {
       />
       <Drawer.Screen
         name="My Profile"
-        component={DoctorMyProfile}
+        component={DoctorProfileStack}
         options={{
           unmountOnBlur: true,
         }}
@@ -59,6 +58,7 @@ DoctorDashboardStack = () => {
                 icon="menu"
                 size={20}
                 onPress={() => navigation.toggleDrawer()}
+                style={{ marginLeft: -10 }}
               />
               )
           }
@@ -74,6 +74,33 @@ DoctorDashboardStack = () => {
         component={MyPatientDetails}
       />
       <Stack.Screen name="DoctorMedicationSearch" component={MedicationSearchScreen} />
+    </Stack.Navigator>
+  );
+};
+
+DoctorProfileStack = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName="DoctorMyProfile"
+      screenOptions={({navigation}) => {
+        return {
+          headerLeft: () => {
+            return (
+              <IconButton
+                icon="menu"
+                size={20}
+                onPress={() => navigation.toggleDrawer()}
+                style={{ marginLeft: -10 }}
+              />
+              )
+          }
+        }
+      }}
+    >
+      <Stack.Screen
+        name="DoctorMyProfile"
+        component={DoctorMyProfile}
+      />
     </Stack.Navigator>
   );
 };
