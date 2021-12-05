@@ -80,7 +80,7 @@ export const emitGetProfileFail = () => ({
 
 const getProfile = ({jwt}) => {
     let Authorization = composeAuth(jwt)
-    let url = backendUrl + '/api/profile'
+    let url = backendUrl + '/api/profile/me'
     return fetch(url, {
         method: 'GET',
         headers: {

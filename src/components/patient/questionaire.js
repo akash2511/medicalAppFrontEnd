@@ -33,7 +33,7 @@ export default PatientQuestionaire = (props) => {
     }, [])
 
     const onSubmit = () =>{
-        const data = Object.assign({}, props?.profileDetails , {
+        const data = {
             "do_you_smoke": localAnswers?.do_you_smoke,
             "do_you_drink": localAnswers?.do_you_drink,
             "height": {
@@ -47,7 +47,7 @@ export default PatientQuestionaire = (props) => {
                 "date": moment().format("YYYY-MM-DD")
             },
             "questionaire_shown": true,
-        })
+        }
         dispatch(startEditProfile({ jwt, data, id: props?.profileDetails?._id}))
     }
 

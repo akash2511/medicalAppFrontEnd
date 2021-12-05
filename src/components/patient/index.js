@@ -62,7 +62,7 @@ export default PatientDashboard = (props) => {
 
     useEffect(() => {
         if (!isLoadingGetProfile && isLoadingGetProfile !== isLoadingGetProfilePrev && isLoadingGetProfilePrev !== undefined){
-            // setShowQuestionaire(!profileDetails?.questionaire_shown)
+            setShowQuestionaire(!profileDetails?.questionaire_shown)
         }
     }, [isLoadingGetProfile, isLoadingGetProfilePrev])
 
@@ -108,10 +108,10 @@ export default PatientDashboard = (props) => {
 
     const onChangeSleep = (value) => {
         if (patientSelfManagement) {
-            dispatch(startEditPatientMeal({ jwt, data: { sleep_in_min: value }, id: patientMeal?._id }))
+            dispatch(startEditPatientMeal({ jwt, data: { sleep_in_min: value*60 }, id: patientMeal?._id }))
         }
         else {
-            dispatch(startPostPatientMeal({ jwt, data: { sleep_in_min: value, date: moment().format("YYYY-MM-DD") } }))
+            dispatch(startPostPatientMeal({ jwt, data: { sleep_in_min: value*60, date: moment().format("YYYY-MM-DD") } }))
         }
     }
 
@@ -143,7 +143,7 @@ export default PatientDashboard = (props) => {
                                 ADD +
                             </Button>
                         </View>
-                        {patientMeal['breakfast'] ? patientMeal['breakfast']?.map((item, index) => {
+                        {patientMeal?.['breakfast'] ? patientMeal['breakfast']?.map((item, index) => {
                             return (
                                 <Text key={index} style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
                             )
@@ -156,7 +156,7 @@ export default PatientDashboard = (props) => {
                                 ADD +
                             </Button>
                         </View>
-                        {patientMeal['lunch'] ? patientMeal['lunch']?.map((item, index) => {
+                        {patientMeal?.['lunch'] ? patientMeal['lunch']?.map((item, index) => {
                             return (
                                 <Text key={index} style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
                             )
@@ -169,7 +169,7 @@ export default PatientDashboard = (props) => {
                                 ADD +
                             </Button>
                         </View>
-                        {patientMeal['snack'] ? patientMeal['snack']?.map((item, index) => {
+                        {patientMeal?.['snack'] ? patientMeal['snack']?.map((item, index) => {
                             return (
                                 <Text key={index} style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
                             )
@@ -182,7 +182,7 @@ export default PatientDashboard = (props) => {
                                 ADD +
                             </Button>
                         </View>
-                        {patientMeal['dinner'] ? patientMeal['dinner']?.map((item, index) => {
+                        {patientMeal?.['dinner'] ? patientMeal['dinner']?.map((item, index) => {
                             return (
                                 <Text key={index} style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
                             )
@@ -196,12 +196,12 @@ export default PatientDashboard = (props) => {
                         <Text style={{ fontSize: 20, fontWeight: '700', marginTop: 8 }}>{getCaloriesBurnt()} kcal</Text>
                     </View>
                     <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '48%' }}>
-                        <Text style={{ fontSize: 15, marginBottom: 10, marginTop: 5 }}>Sleep (mins)</Text>
+                        <Text style={{ fontSize: 15, marginBottom: 10, marginTop: 5 }}>Sleep (hrs)</Text>
                         <NumericInput
                             onChange={value => onChangeSleep(value)}
                             minValue={0}
                             rounded
-                            step={15}
+                            step={2}
                             value={patientSelfManagement?.sleep_in_min ? patientSelfManagement?.sleep_in_min : 0}
                         />
                     </View>

@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import { ScrollView, View, Text, ActivityIndicator, Image } from 'react-native';
 import { Button } from 'react-native-paper';
+import moment from 'moment'
 import { useDispatch, useSelector } from "react-redux";
 
 //actions
@@ -25,14 +26,14 @@ export default PatientMyProfile = (props) => {
     return (
         isLoadingGetProfile ? <ActivityIndicator/> : <View>
             <ScrollView contentContainerStyle={{ height: '100%', marginTop: 20, marginHorizontal: 20 }}>
-                <View style={{flexDirection:'row',justifyContent:'flex-start', alignItems:'baseline' }}>
+                <View style={{flexDirection:'row',justifyContent:'flex-start', alignItems:'center' }}>
                     <Image style={{ width: 60, height: 60, borderRadius: 40, marginRight: 15 }} source={{ uri: profileDetails?.profile_pic }} />
-                    <Text style={{ fontWeight: "bold", color: "#000", marginBottom: 20, fontSize: 30 }}>{profileDetails?.first_name} {profileDetails?.last_name}</Text>
+                    <Text style={{ fontWeight: "bold", color: "#000", fontSize: 30 }}>{profileDetails?.first_name} {profileDetails?.last_name}</Text>
                 </View>
                 <View style={{ backgroundColor: "#fff", paddingHorizontal: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical: 20 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop:10 }}>Age: {profileDetails?.dob}</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop:10 }}>Height:  {profileDetails?.height}</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop:10 }}>Weight:  {profileDetails?.weight}</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Age: {moment().diff(moment(profileDetails?.dob, "DD-MM-YYYY"), 'years')}</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Height:  {profileDetails?.height?.[0]?.measurement} ({profileDetails?.height?.[0]?.unit_of_measurement})</Text>
+                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Weight:  {profileDetails?.weight?.[0]?.measurement} ({profileDetails?.weight?.[0]?.unit_of_measurement})</Text>
                     <Text style={{ fontSize: 16, fontWeight: '500', marginTop:10 }}>Do you Smoke:  {profileDetails?.do_you_smoke}</Text>
                     <Text style={{ fontSize: 16, fontWeight: '500', marginVertical:10 }}>Do you Drink:  {profileDetails?.do_you_drink}</Text>
                 </View>
