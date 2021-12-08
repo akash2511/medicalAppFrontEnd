@@ -15,7 +15,7 @@ import { getisExerciseLoading, getExercise } from '../../redux/reducers/exercise
 
 //actions
 import { fetchProfile } from '../../redux/actions/account'
-import { startFetchPatientMeal, startFetchPatientSelfManagement, startPostPatientMeal, startEditPatientMeal } from '../../redux/actions/patient'
+import { startFetchPatientMeal, startFetchPatientSelfManagement, startPostPatientMeal, startEditPatientMeal, startPostPatientSelfManagement, startEditPatientSelfManagement } from '../../redux/actions/patient'
 import { startFetchDiet } from '../../redux/actions/diet'
 import { startFetchExercise } from '../../redux/actions/exercise'
 
@@ -108,10 +108,17 @@ export default PatientDashboard = (props) => {
 
     const onChangeSleep = (value) => {
         if (patientSelfManagement) {
-            dispatch(startEditPatientMeal({ jwt, data: { sleep_in_min: value*60 }, id: patientMeal?._id }))
+            const data = { 
+                sleep_in_min: value * 60 
+            }
+            dispatch(startEditPatientSelfManagement({ jwt, data,id: patientMeal?._id }))
         }
         else {
-            dispatch(startPostPatientMeal({ jwt, data: { sleep_in_min: value*60, date: moment().format("YYYY-MM-DD") } }))
+            const data = {
+                sleep_in_min: value * 60,
+                date: moment().format("YYYY-MM-DD")
+            }
+            dispatch(startPostPatientSelfManagement({ jwt, data }))
         }
     }
 
@@ -202,7 +209,7 @@ export default PatientDashboard = (props) => {
                             minValue={0}
                             rounded
                             step={2}
-                            value={patientSelfManagement?.sleep_in_min ? patientSelfManagement?.sleep_in_min : 0}
+                            value={patientSelfManagement?.sleep_in_min ? patientSelfManagement?.sleep_in_min/60 : 0}
                         />
                     </View>
                 </View>

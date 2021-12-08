@@ -8,6 +8,7 @@ import {
 } from '../actions.js'
 
 import { checkStatus, backendUrl, composeAuth } from '../../helpers/utils'
+import moment from 'moment'
 
 // get requests
 
@@ -166,6 +167,7 @@ export const startPostPatientSelfManagement = (data) => {
             const validatedData = checkStatus(receivedData)
             const response = await validatedData.json()
             dispatch(emitPatientSelfManagementData(response?.data))
+            dispatch(startFetchPatientSelfManagement({ jwt: data?.jwt, date: moment().format("YYYY-MM-DD") }))
         } catch (err) {
             dispatch(emitPatientSelfManagementFail())
         }
@@ -195,6 +197,7 @@ export const startEditPatientSelfManagement = (data) => {
             const validatedData = checkStatus(receivedData)
             const response = await validatedData.json()
             dispatch(emitPatientSelfManagementData(response?.data))
+            dispatch(startFetchPatientSelfManagement({jwt:data?.jwt,date:moment().format("YYYY-MM-DD")}))
         } catch (err) {
             dispatch(emitPatientSelfManagementFail())
         }
