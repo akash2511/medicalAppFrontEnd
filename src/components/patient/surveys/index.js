@@ -1,48 +1,44 @@
 import React, { useEffect } from 'react';
-import { ScrollView, View, Text, ActivityIndicator, Image } from 'react-native';
-import { Button } from 'react-native-paper';
+import { ScrollView, View, Text, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import { Button, Paragraph, Title } from 'react-native-paper';
 import moment from 'moment'
 import { useDispatch, useSelector } from "react-redux";
 
 //actions
-import { emitLogoutaction, fetchProfile } from '../../../redux/actions/account'
+import { startFetchAllSurveys } from '../../../redux/actions/survey'
 
 //reducers
-import { getUserName, getJwt, getIsLoadingGetProfile, getProfileDetails } from '../../../redux/reducers/account'
+import { getJwt } from '../../../redux/reducers/account'
+import { getisLoadingFetchAllSurveys, getAllsurveys } from '../../../redux/reducers/surveys'
 
 export default PatientMySurveys = (props) => {
     const dispatch = useDispatch();
 
     const jwt = useSelector(getJwt)
-    const isLoadingGetProfile = useSelector(getIsLoadingGetProfile)
-    const profileDetails = useSelector(getProfileDetails)
-    const username = useSelector(getUserName)
+    const isLoadingFetchAllSurveys = useSelector(getisLoadingFetchAllSurveys)
+    const allsurveys = useSelector(getAllsurveys)
 
     useEffect(() => {
-        props?.navigation?.setOptions({ title: username?.toUpperCase() })
-        dispatch(fetchProfile({ jwt }))
+        props?.navigation?.setOptions({ title: "Surveys" })
+        dispatch(startFetchAllSurveys({ jwt }))
     }, [])
 
     return (
-        isLoadingGetProfile ? <ActivityIndicator /> : <View>
+        isLoadingFetchAllSurveys ? <ActivityIndicator /> : <View>
             <ScrollView contentContainerStyle={{ height: '100%', marginTop: 20, marginHorizontal: 20 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-                    <Image style={{ width: 60, height: 60, borderRadius: 40, marginRight: 15 }} source={{ uri: profileDetails?.profile_pic }} />
-                    <Text style={{ fontWeight: "bold", color: "#000", fontSize: 30 }}>{profileDetails?.first_name} {profileDetails?.last_name}</Text>
-                </View>
-                <View style={{ backgroundColor: "#fff", paddingHorizontal: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical: 20 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Age: {moment().diff(moment(profileDetails?.dob, "DD-MM-YYYY"), 'years')}</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Height:  {profileDetails?.height?.[0]?.measurement} ({profileDetails?.height?.[0]?.unit_of_measurement})</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Weight:  {profileDetails?.weight?.[0]?.measurement} ({profileDetails?.weight?.[0]?.unit_of_measurement})</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Do you Smoke:  {profileDetails?.do_you_smoke}</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginVertical: 10 }}>Do you Drink:  {profileDetails?.do_you_drink}</Text>
-                </View>
-                <Button mode="contained" onPress={() => { }} style={{ marginTop: 20 }} labelStyle={{ color: "#fff" }}>
-                    {"EDIT"}
-                </Button>
-                <Button mode="contained" onPress={() => dispatch(emitLogoutaction())} style={{ marginTop: 20 }} labelStyle={{ color: "#fff" }}>
-                    {"LOGOUT"}
-                </Button>
+                {allsurveys && allsurveys?.map((survey,index)=>{
+                    return (
+                        <View key={index} style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', backgroundColor:"#fff", padding:10, borderRadius:10}}>
+                            <View style={{width:"70%"}}>
+                                <Title>{survey?.name}</Title>
+                                <Paragraph>{survey?.description}</Paragraph>
+                            </View>
+                            <Button mode="outlined" onPress={() => props?.navigation?.navigate("PatientSurveyQuestions", { survey })}>
+                                TAKE
+                            </Button>
+                        </View>
+                    )
+                })}
             </ScrollView>
         </View>
     );

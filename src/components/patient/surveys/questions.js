@@ -1,48 +1,114 @@
 import React, { useEffect } from 'react';
-import { ScrollView, View, Text, ActivityIndicator, Image } from 'react-native';
-import { Button } from 'react-native-paper';
-import moment from 'moment'
+import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Title } from 'react-native-paper';
+import { RadioButton, TextInput, Button } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
-
-//actions
-import { emitLogoutaction, fetchProfile } from '../../../redux/actions/account'
+import moment from 'moment';
 
 //reducers
 import { getUserName, getJwt, getIsLoadingGetProfile, getProfileDetails } from '../../../redux/reducers/account'
+import { getisLoadingPostSurveySubmissions,getisLoadingPutSurveySubmissions,getisLoadingFetchAllSurveyQuestions,getallSurveyQuestions,getisLoadingFetchAllSurveySubmissions,getallSurveySubmissions,getisError } from '../../../redux/reducers/surveys'
 
-export default PatientSurveyQuestions = (props) => {
+//actions
+import { startFetchAllSurveyQuestions, startFetchAllSurveySubmissions, startPostSurveySubmissions, startPutSurveySubmissions } from '../../../redux/actions/survey'
+import { fetchProfile } from '../../../redux/actions/account'
+
+//assets
+import { usePrevious } from '../../../helpers/utils';
+
+export default PatientQuestionaire = (props) => {
     const dispatch = useDispatch();
 
+    const { survey } = props?.route?.params;
+
     const jwt = useSelector(getJwt)
+    const isLoadingPostSurveySubmissions = useSelector(getisLoadingPostSurveySubmissions)
+    const isLoadingPostSurveySubmissionsPrev = usePrevious(isLoadingPostSurveySubmissions)
+    const isLoadingPutSurveySubmissions = useSelector(getisLoadingPutSurveySubmissions)
+    const isLoadingPutSurveySubmissionsPrev = usePrevious(isLoadingPutSurveySubmissions)
+    const isLoadingFetchAllSurveyQuestions = useSelector(getisLoadingFetchAllSurveyQuestions)
+    const allSurveyQuestions = useSelector(getallSurveyQuestions)
+    const isLoadingFetchAllSurveySubmissions = useSelector(getisLoadingFetchAllSurveySubmissions)
+    const allSurveySubmissions = useSelector(getallSurveySubmissions)
     const isLoadingGetProfile = useSelector(getIsLoadingGetProfile)
+    const isLoadingGetProfilePrev = usePrevious(isLoadingGetProfile)
     const profileDetails = useSelector(getProfileDetails)
-    const username = useSelector(getUserName)
+
+    const onChangeValue = (questionId, answerId, type) => {
+        const questionSubmission = allSurveySubmissions?.filter((item) => item?.question_id == questionId)
+        if (type === "SINGLE_CHOICE") {
+            if (questionSubmission?.[0]?.answers?.[0]){
+                const data = {
+                    "answers": [answerId]
+                }
+                dispatch(startPutSurveySubmissions({ jwt, data, submissionId: questionSubmission?.[0]?._id }))
+            }
+            else{
+                const data = {
+                    "question_id": questionId,
+                    "answers": [answerId]
+                }
+                dispatch(startPostSurveySubmissions({ jwt, data }))
+            }
+        }
+    }
 
     useEffect(() => {
-        props?.navigation?.setOptions({ title: username?.toUpperCase() })
+        props?.navigation?.setOptions({ title: survey?.name })
         dispatch(fetchProfile({ jwt }))
     }, [])
 
+    useEffect(() => {
+        if (!isLoadingGetProfile && isLoadingGetProfilePrev !== isLoadingGetProfile && isLoadingGetProfilePrev !== undefined){
+            dispatch(startFetchAllSurveyQuestions({ jwt, surveyId: survey?._id }))
+            dispatch(startFetchAllSurveySubmissions({ jwt, profileId: profileDetails?._id, surveyId: survey?._id }))
+        }
+    }, [isLoadingGetProfile, isLoadingGetProfilePrev])
+
+    useEffect(() => {
+        if (!isLoadingPostSurveySubmissions && isLoadingPostSurveySubmissionsPrev !== isLoadingPostSurveySubmissions && isLoadingPostSurveySubmissionsPrev !== undefined){
+            dispatch(startFetchAllSurveySubmissions({ jwt, profileId: profileDetails?._id, surveyId: survey?._id }))
+        }
+    }, [isLoadingPostSurveySubmissions, isLoadingPostSurveySubmissionsPrev])
+
+    useEffect(() => {
+        if (!isLoadingPutSurveySubmissions && isLoadingPutSurveySubmissionsPrev !== isLoadingPutSurveySubmissions && isLoadingPutSurveySubmissionsPrev !== undefined){
+            dispatch(startFetchAllSurveySubmissions({ jwt, profileId: profileDetails?._id, surveyId: survey?._id }))
+        }
+    }, [isLoadingPutSurveySubmissions, isLoadingPutSurveySubmissionsPrev])
+
+    const renderAnswers = () => {
+        return allSurveyQuestions?.map((question, index) => {
+            if (question?.type === "SINGLE_CHOICE"){
+                const questionSubmission = allSurveySubmissions?.filter((item) => item?.question_id == question?._id)
+                return (
+                    <View key={index} style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                        <Title>{question?.title}</Title>
+                        <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionSubmission?.[0]?.answers?.[0]}>
+                            {question?.answers.map((answer, index) => {
+                                return (
+                                    <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                        <RadioButton.Android value={answer?._id} />
+                                        <Text>
+                                            {answer?.title}
+                                        </Text>
+                                    </TouchableOpacity>
+                                )
+                            })}
+                        </RadioButton.Group>
+                    </View>
+                )
+            }})
+    }
+
     return (
-        isLoadingGetProfile ? <ActivityIndicator /> : <View>
-            <ScrollView contentContainerStyle={{ height: '100%', marginTop: 20, marginHorizontal: 20 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
-                    <Image style={{ width: 60, height: 60, borderRadius: 40, marginRight: 15 }} source={{ uri: profileDetails?.profile_pic }} />
-                    <Text style={{ fontWeight: "bold", color: "#000", fontSize: 30 }}>{profileDetails?.first_name} {profileDetails?.last_name}</Text>
-                </View>
-                <View style={{ backgroundColor: "#fff", paddingHorizontal: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical: 20 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Age: {moment().diff(moment(profileDetails?.dob, "DD-MM-YYYY"), 'years')}</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Height:  {profileDetails?.height?.[0]?.measurement} ({profileDetails?.height?.[0]?.unit_of_measurement})</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Weight:  {profileDetails?.weight?.[0]?.measurement} ({profileDetails?.weight?.[0]?.unit_of_measurement})</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginTop: 10 }}>Do you Smoke:  {profileDetails?.do_you_smoke}</Text>
-                    <Text style={{ fontSize: 16, fontWeight: '500', marginVertical: 10 }}>Do you Drink:  {profileDetails?.do_you_drink}</Text>
-                </View>
-                <Button mode="contained" onPress={() => { }} style={{ marginTop: 20 }} labelStyle={{ color: "#fff" }}>
-                    {"EDIT"}
-                </Button>
-                <Button mode="contained" onPress={() => dispatch(emitLogoutaction())} style={{ marginTop: 20 }} labelStyle={{ color: "#fff" }}>
-                    {"LOGOUT"}
-                </Button>
+        isLoadingGetProfile || isLoadingFetchAllSurveyQuestions || isLoadingFetchAllSurveySubmissions || isLoadingPostSurveySubmissions || isLoadingPutSurveySubmissions ? <ActivityIndicator/> : <View>
+            <Button mode="text" icon="chevron-left" onPress={() => props?.navigation?.goBack()} style={{ marginTop: 10, width: '30%', marginHorizontal: 20 }} labelStyle={{ color: "#000" }}>
+                {"GO BACK"}
+            </Button>
+            <ScrollView contentContainerStyle={{ marginTop: 20, marginHorizontal: 20, paddingBottom: 200 }}>
+                <Text style={{ fontWeight: "bold", color: "#000", marginVertical: 10, fontSize: 20 }}>Please answer these question.</Text>
+                {renderAnswers()}
             </ScrollView>
         </View>
     );

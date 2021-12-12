@@ -133,7 +133,7 @@ export const startFetchAllSurveySubmissions = (data) => {
             const receivedData = await fetchAllSurveySubmissions(data)
             const validatedData = checkStatus(receivedData)
             const response = await validatedData.json()
-            dispatch(emitFetchAllSurveySubmissionsData(response?.data))
+            dispatch(emitFetchAllSurveySubmissionsData(response?.data?.surveySubmissions))
         } catch (err) {
             dispatch(emitFetchAllSurveySubmissionsFail())
         }
