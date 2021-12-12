@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
+import { version } from '../../../package.json'
 
 //libs
 import { useDispatch, useSelector } from 'react-redux'
@@ -125,6 +126,7 @@ Login = (props) => {
                             {"LOGIN"}
                         </Button>}
                         {msg && msg?.length ? <Text extraStyle={{ fontWeight: 'regular', color: '#ff2459' }}>{msg}</Text> : null}
+                        <Text extraStyle={{ fontWeight: 'regular', color: '#fff' }}>v {version}</Text>
                     </View>
                 </View>
             </View>
