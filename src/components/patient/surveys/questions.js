@@ -66,6 +66,21 @@ export default PatientQuestionaire = (props) => {
                 dispatch(startPostSurveySubmissions({ jwt, data }))
             }
         }
+        else if (type === "SCALE") {
+            if (questionSubmission?.[0]?.answers?.[0]){
+                const data = {
+                    "answers": [answerId]
+                }
+                dispatch(startPutSurveySubmissions({ jwt, data, submissionId: questionSubmission?.[0]?._id }))
+            }
+            else{
+                const data = {
+                    "question_id": questionId,
+                    "answers": [answerId]
+                }
+                dispatch(startPostSurveySubmissions({ jwt, data }))
+            }
+        }
     }
 
     useEffect(() => {
