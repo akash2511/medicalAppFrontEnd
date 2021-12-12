@@ -44,5 +44,6 @@
     "babel-preset-expo": "8.5.1",
     "redux-devtools": "^3.7.0"
   },
-  "private": true
+  "private": true,
+  "version": "0.0.1"
 }
