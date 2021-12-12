@@ -13,6 +13,10 @@ import PatientDashboard from '../../../components/patient'
 import PatientMyProfile from '../../../components/patient/myProfile'
 import DietSearchScreen from '../../../components/search/diet'
 import ExerciseSearchScreen from '../../../components/search/exercise'
+import SupplementsSearchScreen from '../../../components/search/supplements'
+import PatientMySurveys from '../../../components/patient/surveys'
+import PatientSurveyQuestions from '../../../components/patient/surveys/questions'
+
 
 //config
 const Drawer = createDrawerNavigator();
@@ -40,6 +44,13 @@ export default PatientRoute = () => {
             <Drawer.Screen
                 name="My Profile"
                 component={PatientProfileStack}
+                options={{
+                    unmountOnBlur: true,
+                }}
+            />
+            <Drawer.Screen
+                name="Surveys"
+                component={PatientSurveyStack}
                 options={{
                     unmountOnBlur: true,
                 }}
@@ -73,6 +84,7 @@ PatientDashboardStack = () => {
             />
             <Stack.Screen name="PatientDietSearch" component={DietSearchScreen} />
             <Stack.Screen name="PatientExerciseSearch" component={ExerciseSearchScreen} />
+            <Stack.Screen name="PatientSupplementsSearch" component={SupplementsSearchScreen} />
         </Stack.Navigator>
     );
 };
@@ -99,6 +111,37 @@ PatientProfileStack = () => {
             <Stack.Screen
                 name="PatientMyProfile"
                 component={PatientMyProfile}
+            />
+        </Stack.Navigator>
+    );
+};
+
+PatientSurveyStack = () => {
+    return (
+        <Stack.Navigator
+            initialRouteName="PatientSurveys"
+            screenOptions={({ navigation }) => {
+                return {
+                    headerLeft: () => {
+                        return (
+                            <IconButton
+                                icon="menu"
+                                size={20}
+                                onPress={() => navigation.toggleDrawer()}
+                                style={{marginLeft:-10}}
+                            />
+                        )
+                    }
+                }
+            }}
+        >
+            <Stack.Screen
+                name="PatientSurveys"
+                component={PatientMySurveys}
+            />
+            <Stack.Screen
+                name="PatientSurveyQuestions"
+                component={PatientSurveyQuestions}
             />
         </Stack.Navigator>
     );

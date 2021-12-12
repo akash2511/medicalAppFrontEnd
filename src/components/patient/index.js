@@ -97,6 +97,10 @@ export default PatientDashboard = (props) => {
         props?.navigation.navigate("PatientExerciseSearch", { edit: patientSelfManagement})
     }
 
+    const onAddSupplements = () => {
+        props?.navigation.navigate("PatientSupplementsSearch", { edit: patientSelfManagement})
+    }
+
     const onChangeHidration = (value) => {
         if (patientMeal) {
             dispatch(startEditPatientMeal({ jwt, data: { hydartion_in_litres: value }, id: patientMeal?._id }))
@@ -111,7 +115,7 @@ export default PatientDashboard = (props) => {
             const data = { 
                 sleep_in_min: value * 60 
             }
-            dispatch(startEditPatientSelfManagement({ jwt, data,id: patientMeal?._id }))
+            dispatch(startEditPatientSelfManagement({ jwt, data, id: patientSelfManagement?._id }))
         }
         else {
             const data = {
@@ -194,6 +198,21 @@ export default PatientDashboard = (props) => {
                                 <Text key={index} style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
                             )
                         }) : null}
+                    </View>
+                </View>
+                <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical: 20 }}>
+                    <View >
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500' }}>Supplements:</Text>
+                            <Button mode="outlined" onPress={() => onAddSupplements()}>
+                                ADD +
+                            </Button>
+                        </View>
+                        {/* {patientSelfManagement?.exercise ? patientSelfManagement?.exercise?.map((item, index) => {
+                            return (
+                                <Text key={index} style={{ fontSize: 16 }}>{exerciseById[item?.id]?.[0]?.name} - {item?.duration_in_min}min</Text>
+                            )
+                        }) : null} */}
                     </View>
                 </View>
                 <Text style={{ fontWeight: "700", color: "#000", marginVertical: 10, fontSize: 18 }}>Self Management</Text>

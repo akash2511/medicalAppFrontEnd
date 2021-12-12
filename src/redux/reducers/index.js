@@ -12,6 +12,7 @@ import { diet } from './diet'
 import { supplements } from './supplements'
 import { patient } from './patient'
 import { exercise } from './exercise'
+import { surveys } from './surveys'
 
 export const RootReducer = combineReducers({
     profile,
@@ -24,5 +25,6 @@ export const RootReducer = combineReducers({
     diet,
     supplements,
     patient,
-    exercise
+    exercise,
+    surveys
 })
