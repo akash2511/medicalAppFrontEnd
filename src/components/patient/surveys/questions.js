@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Title } from 'react-native-paper';
 import { RadioButton, TextInput, Button } from 'react-native-paper';
@@ -19,6 +19,9 @@ import { usePrevious } from '../../../helpers/utils';
 export default PatientQuestionaire = (props) => {
     const dispatch = useDispatch();
 
+    const [presentQuestionNo,setPresentQuestionNo] = useState("")
+    const [questionAnswers,setQuestionAnswers] = useState({})
+
     const { survey } = props?.route?.params;
 
     const jwt = useSelector(getJwt)
@@ -27,59 +30,43 @@ export default PatientQuestionaire = (props) => {
     const isLoadingPutSurveySubmissions = useSelector(getisLoadingPutSurveySubmissions)
     const isLoadingPutSurveySubmissionsPrev = usePrevious(isLoadingPutSurveySubmissions)
     const isLoadingFetchAllSurveyQuestions = useSelector(getisLoadingFetchAllSurveyQuestions)
+    const isLoadingFetchAllSurveyQuestionsPrev = usePrevious(isLoadingFetchAllSurveyQuestions)
     const allSurveyQuestions = useSelector(getallSurveyQuestions)
     const isLoadingFetchAllSurveySubmissions = useSelector(getisLoadingFetchAllSurveySubmissions)
+    const isLoadingFetchAllSurveySubmissionsPrev = usePrevious(isLoadingFetchAllSurveySubmissions)
     const allSurveySubmissions = useSelector(getallSurveySubmissions)
     const isLoadingGetProfile = useSelector(getIsLoadingGetProfile)
     const isLoadingGetProfilePrev = usePrevious(isLoadingGetProfile)
     const profileDetails = useSelector(getProfileDetails)
 
     const onChangeValue = (questionId, answerId, type) => {
-        const questionSubmission = allSurveySubmissions?.filter((item) => item?.question_id == questionId)
-        if (type === "SINGLE_CHOICE") {
-            if (questionSubmission?.[0]?.answers?.[0]){
-                const data = {
-                    "answers": [answerId]
-                }
-                dispatch(startPutSurveySubmissions({ jwt, data, submissionId: questionSubmission?.[0]?._id }))
-            }
-            else{
-                const data = {
-                    "question_id": questionId,
-                    "answers": [answerId]
-                }
-                dispatch(startPostSurveySubmissions({ jwt, data }))
-            }
+        if (type == "SINGLE_CHOICE") {
+            const obj = Object.assign({}, questionAnswers, {
+                [questionId]: [answerId]
+            })
+            setQuestionAnswers(obj)
+        }
+        else if (type == "BOOLEAN") {
+            setQuestionAnswers(Object.assign({}, questionAnswers, {
+                [questionId]: [answerId]
+            }))
         }
         else if (type === "MULTIPLE_CHOICE") {
-            if (questionSubmission?.[0]?.answers?.[0]){
-                const data = {
-                    "answers": [answerId]
-                }
-                dispatch(startPutSurveySubmissions({ jwt, data, submissionId: questionSubmission?.[0]?._id }))
+            if (questionAnswers?.[questionId] && questionAnswers?.[questionId]?.includes(answerId)){
+                setQuestionAnswers(Object.assign({}, questionAnswers, {
+                    [questionId]: questionAnswers?.[questionId]?.filter((item) => item !== answerId)
+                }))
             }
             else{
-                const data = {
-                    "question_id": questionId,
-                    "answers": [answerId]
-                }
-                dispatch(startPostSurveySubmissions({ jwt, data }))
+                setQuestionAnswers(Object.assign({}, questionAnswers, {
+                    [questionId]: questionAnswers?.[questionId]?.concat([answerId])
+                }))
             }
         }
-        else if (type === "SCALE") {
-            if (questionSubmission?.[0]?.answers?.[0]){
-                const data = {
-                    "answers": [answerId]
-                }
-                dispatch(startPutSurveySubmissions({ jwt, data, submissionId: questionSubmission?.[0]?._id }))
-            }
-            else{
-                const data = {
-                    "question_id": questionId,
-                    "answers": [answerId]
-                }
-                dispatch(startPostSurveySubmissions({ jwt, data }))
-            }
+        else if (type == "SCALE") {
+            setQuestionAnswers(Object.assign({}, questionAnswers, {
+                [questionId]: [answerId]
+            }))
         }
     }
 
@@ -96,93 +83,292 @@ export default PatientQuestionaire = (props) => {
     }, [isLoadingGetProfile, isLoadingGetProfilePrev])
 
     useEffect(() => {
+        if (!isLoadingFetchAllSurveyQuestions && isLoadingFetchAllSurveyQuestionsPrev !== isLoadingFetchAllSurveyQuestions && isLoadingFetchAllSurveyQuestionsPrev !== undefined && allSurveyQuestions){
+            setPresentQuestionNo(0)
+        }
+    }, [isLoadingFetchAllSurveyQuestions, isLoadingFetchAllSurveyQuestionsPrev])
+
+    useEffect(() => {
+        if (!isLoadingFetchAllSurveySubmissions && isLoadingFetchAllSurveySubmissionsPrev !== isLoadingFetchAllSurveySubmissions && isLoadingFetchAllSurveySubmissionsPrev !== undefined && allSurveySubmissions){
+            let obj = {}
+            allSurveySubmissions.forEach((sub)=>{
+                const qType = allSurveyQuestions?.filter(q => q?._id == sub?.question_id)?.[0]?.type
+                sub?.answers?.forEach((ans)=>{
+                    if (qType == "SINGLE_CHOICE") {
+                        obj = Object.assign({}, obj, {
+                            [sub?.question_id]: [ans]
+                        })
+                    }
+                    else if (qType == "BOOLEAN") {
+                        obj = Object.assign({}, obj, {
+                            [sub?.question_id]: [ans]
+                        })
+                    }
+                    else if (qType === "MULTIPLE_CHOICE") {
+                        if (obj?.[sub?.question_id] && obj?.[sub?.question_id]?.includes(ans)) {
+                            obj = Object.assign({}, obj, {
+                                [sub?.question_id]: obj?.[sub?.question_id]?.filter((item) => item !== ans)
+                            })
+                        }
+                        else {
+                            obj = Object.assign({}, obj, {
+                                [sub?.question_id]: obj?.[sub?.question_id]?.concat([ans])
+                            })
+                        }
+                    }
+                    else if (qType == "SCALE") {
+                        obj = Object.assign({}, obj, {
+                            [sub?.question_id]: [ans]
+                        })
+                    }
+                })
+            })
+            setQuestionAnswers(obj)
+        }
+    }, [isLoadingFetchAllSurveySubmissions, isLoadingFetchAllSurveySubmissionsPrev])
+
+    useEffect(() => {
         if (!isLoadingPostSurveySubmissions && isLoadingPostSurveySubmissionsPrev !== isLoadingPostSurveySubmissions && isLoadingPostSurveySubmissionsPrev !== undefined){
-            dispatch(startFetchAllSurveySubmissions({ jwt, profileId: profileDetails?._id, surveyId: survey?._id }))
+            props?.navigation?.goBack()
         }
     }, [isLoadingPostSurveySubmissions, isLoadingPostSurveySubmissionsPrev])
 
     useEffect(() => {
         if (!isLoadingPutSurveySubmissions && isLoadingPutSurveySubmissionsPrev !== isLoadingPutSurveySubmissions && isLoadingPutSurveySubmissionsPrev !== undefined){
-            dispatch(startFetchAllSurveySubmissions({ jwt, profileId: profileDetails?._id, surveyId: survey?._id }))
+            props?.navigation?.goBack()
         }
     }, [isLoadingPutSurveySubmissions, isLoadingPutSurveySubmissionsPrev])
 
     const renderAnswers = () => {
-        return allSurveyQuestions?.map((question, index) => {
-            if (question?.type === "SINGLE_CHOICE"){
-                const questionSubmission = allSurveySubmissions?.filter((item) => item?.question_id == question?._id)
-                return (
-                    <View key={index} style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
-                        <Title>{question?.title}</Title>
-                        <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionSubmission?.[0]?.answers?.[0]}>
-                            {question?.answers.map((answer, index) => {
-                                return (
-                                    <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
-                                        <RadioButton.Android value={answer?._id} />
-                                        <Text>
-                                            {answer?.title}
-                                        </Text>
-                                    </TouchableOpacity>
-                                )
-                            })}
-                        </RadioButton.Group>
+        let question = allSurveyQuestions[presentQuestionNo]
+        if (question?.type === "SINGLE_CHOICE"){
+            let subQuestion = question?.answers?.filter(item => item?._id == questionAnswers[question?._id]?.[0])?.[0]?.sub_question
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionAnswers[question?._id]?.[0]}>
+                        {question?.answers.map((answer, index) => {
+                            return (
+                                <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                    <RadioButton.Android value={answer?._id} />
+                                    <Text>
+                                        {answer?.title}
+                                    </Text>
+                                </TouchableOpacity>
+                            )
+                        })}
+                        {subQuestion && subQuestion?.length ? renderSubAnswers(subQuestion) : null}
+                    </RadioButton.Group>
+                </View>
+            )
+        }
+        if (question?.type === "BOOLEAN"){
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionAnswers[question?._id]?.[0]}>
+                        {question?.answers.map((answer, index) => {
+                            return (
+                                <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                    <RadioButton.Android value={answer?._id} />
+                                    <Text>
+                                        {answer?.title}
+                                    </Text>
+                                </TouchableOpacity>
+                            )
+                        })}
+                    </RadioButton.Group>
+                </View>
+            )
+        }
+        else if (question?.type === "TEXT") {
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <TextInput
+                        label={""}
+                        value={questionAnswers[question?._id]?.[0]}
+                        onChangeText={text => onChangeValue(question?._id, text, question?.type)}
+                    />
+                </View>
+            )
+        }
+        else if (question?.type === "MULTIPLE_CHOICE") {
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionAnswers[question?._id]?.[0]}>
+                        {question?.answers.map((answer, index) => {
+                            return (
+                                <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                    <RadioButton.Android value={answer?._id} />
+                                    <Text>
+                                        {answer?.title}
+                                    </Text>
+                                </TouchableOpacity>
+                            )
+                        })}
+                    </RadioButton.Group>
+                </View>
+            )
+        }
+        else if (question?.type === "SCALE") {
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <View style={{flexDirection:'row',justifyContent:'flex-start', flexWrap:'wrap'}}>
+                        {question?.answers.map((answer, index) => {
+                            return (
+                                <TouchableOpacity key={index} style={{ flexDirection: 'column', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                    <Text>
+                                        {answer?.title}
+                                    </Text>
+                                    <RadioButton.Android
+                                        value="first"
+                                        status={questionAnswers[question?._id]?.[0] === answer?._id ? 'checked' : 'unchecked'}
+                                        onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}
+                                        style={{height:10, width:10}}
+                                    />
+                                </TouchableOpacity>
+                            )
+                        })}
                     </View>
-                )
-            }
-            else if (question?.type === "TEXT") {
-                const questionSubmission = allSurveySubmissions?.filter((item) => item?.question_id == question?._id)
-                return (
-                    <View key={index} style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
-                        <Title>{question?.title}</Title>
-                        <TextInput
-                            label={""}
-                            value={questionSubmission?.[0]?.answers?.[0]}
-                            onChangeText={text => onChangeValue(question?._id, text, question?.type)}
-                        />
+                </View>
+            )
+        }
+    }
+
+    const renderSubAnswers = (questionId) => {
+        let question = allSurveyQuestions?.filter(item => item?._id === questionId)?.[0]
+        if (question?.type === "SINGLE_CHOICE"){
+            let subQuestion = question?.answers?.filter(item => item?._id == questionAnswers[question?._id]?.[0])?.[0]?.sub_question
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionAnswers[question?._id]?.[0]}>
+                        {question?.answers.map((answer, index) => {
+                            return (
+                                <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                    <RadioButton.Android value={answer?._id} />
+                                    <Text>
+                                        {answer?.title}
+                                    </Text>
+                                </TouchableOpacity>
+                            )
+                        })}
+                        {subQuestion && subQuestion?.length ? renderSubAnswers(subQuestion) : null}
+                    </RadioButton.Group>
+                </View>
+            )
+        }
+        if (question?.type === "BOOLEAN"){
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionAnswers[question?._id]?.[0]}>
+                        {question?.answers.map((answer, index) => {
+                            return (
+                                <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                    <RadioButton.Android value={answer?._id} />
+                                    <Text>
+                                        {answer?.title}
+                                    </Text>
+                                </TouchableOpacity>
+                            )
+                        })}
+                    </RadioButton.Group>
+                </View>
+            )
+        }
+        else if (question?.type === "TEXT") {
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <TextInput
+                        label={""}
+                        value={questionAnswers[question?._id]?.[0]}
+                        onChangeText={text => onChangeValue(question?._id, text, question?.type)}
+                    />
+                </View>
+            )
+        }
+        else if (question?.type === "MULTIPLE_CHOICE") {
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionAnswers[question?._id]?.[0]}>
+                        {question?.answers.map((answer, index) => {
+                            return (
+                                <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                    <RadioButton.Android value={answer?._id} />
+                                    <Text>
+                                        {answer?.title}
+                                    </Text>
+                                </TouchableOpacity>
+                            )
+                        })}
+                    </RadioButton.Group>
+                </View>
+            )
+        }
+        else if (question?.type === "SCALE") {
+            return (
+                <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                    <Title>{question?.title}</Title>
+                    <View style={{flexDirection:'row',justifyContent:'flex-start', flexWrap:'wrap'}}>
+                        {question?.answers.map((answer, index) => {
+                            return (
+                                <TouchableOpacity key={index} style={{ flexDirection: 'column', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                    <Text>
+                                        {answer?.title}
+                                    </Text>
+                                    <RadioButton.Android
+                                        value="first"
+                                        status={questionAnswers[question?._id]?.[0] === answer?._id ? 'checked' : 'unchecked'}
+                                        onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}
+                                        style={{height:10, width:10}}
+                                    />
+                                </TouchableOpacity>
+                            )
+                        })}
                     </View>
-                )
-            }
-            else if (question?.type === "MULTIPLE_CHOICE") {
-                const questionSubmission = allSurveySubmissions?.filter((item) => item?.question_id == question?._id)
-                return (
-                    <View key={index} style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
-                        <Title>{question?.title}</Title>
-                        <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionSubmission?.[0]?.answers?.[0]}>
-                            {question?.answers.map((answer, index) => {
-                                return (
-                                    <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
-                                        <RadioButton.Android value={answer?._id} />
-                                        <Text>
-                                            {answer?.title}
-                                        </Text>
-                                    </TouchableOpacity>
-                                )
-                            })}
-                        </RadioButton.Group>
-                    </View>
-                )
-            }
-            else if (question?.type === "SCALE") {
-                const questionSubmission = allSurveySubmissions?.filter((item) => item?.question_id == question?._id)
-                return (
-                    <View key={index} style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
-                        <Title>{question?.title}</Title>
-                        <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionSubmission?.[0]?.answers?.[0]}>
-                            {question?.answers.map((answer, index) => {
-                                return (
-                                    <TouchableOpacity key={index} style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
-                                        <RadioButton.Android value={answer?._id} />
-                                        <Text>
-                                            {answer?.title}
-                                        </Text>
-                                    </TouchableOpacity>
-                                )
-                            })}
-                        </RadioButton.Group>
-                    </View>
-                )
-            }
-        })
+                </View>
+            )
+        }
+    }
+
+    const onNextQuestion = () => {
+        if (presentQuestionNo != (allSurveyQuestions?.length - 1)){
+            setPresentQuestionNo(presentQuestionNo + 1)
+        }
+    }
+
+    const onPreviousQuestion = () => {
+        if (presentQuestionNo != 0) {
+            setPresentQuestionNo(presentQuestionNo - 1)
+        }
+    }
+
+    const onSubmit = () => {
+        if (allSurveySubmissions && allSurveySubmissions?.length){
+            const payload = Object.keys(questionAnswers)?.map((key) => {
+                const surveySub = allSurveySubmissions?.filter((item) => item?.question_id === key)?.[0]
+                return {
+                    "id": surveySub?._id,
+                    "answers": questionAnswers[key]
+                }
+            })
+            dispatch(startPutSurveySubmissions({ jwt, data: payload }))
+        }
+        else{
+            const payload = Object.keys(questionAnswers)?.map((key) => {
+                return {
+                    "question_id": key,
+                    "answers": questionAnswers[key]
+                }
+            })
+            dispatch(startPostSurveySubmissions({ jwt, data: payload}))
+        }
     }
 
     return (
@@ -191,8 +377,19 @@ export default PatientQuestionaire = (props) => {
                 {"GO BACK"}
             </Button>
             <ScrollView contentContainerStyle={{ marginTop: 20, marginHorizontal: 20, paddingBottom: 200 }}>
-                <Text style={{ fontWeight: "bold", color: "#000", marginVertical: 10, fontSize: 20 }}>Please answer these question.</Text>
-                {renderAnswers()}
+                <Text style={{ fontWeight: "bold", color: "#000", marginVertical: 10, fontSize: 20 }}>Question - {presentQuestionNo + 1}/{allSurveyQuestions?.length}</Text>
+                {allSurveyQuestions && allSurveyQuestions?.length ? renderAnswers(): null}
+                {allSurveyQuestions && allSurveyQuestions?.length ? <View style={{flexDirection:'row', justifyContent:"space-around"}}>
+                    {presentQuestionNo != 0 ? <Button mode="outlined" onPress={() => onPreviousQuestion()}>
+                        BACK
+                    </Button> : null}
+                    {presentQuestionNo == (allSurveyQuestions?.length - 1) ? 
+                    <Button mode="outlined" onPress={() => onSubmit()}>
+                        SUBMIT
+                    </Button>:<Button mode="outlined" onPress={() => onNextQuestion()}>
+                        NEXT
+                    </Button>
+                </View>:null}
             </ScrollView>
         </View>
     );

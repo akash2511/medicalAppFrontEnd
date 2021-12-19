@@ -187,7 +187,7 @@ export const startPostSurveySubmissions = (data) => {
 
 const postSurveySubmissions = ({jwt, data}) => {
     let Authorization = composeAuth(jwt)
-    let url = backendUrl + '/api/survey-submission'
+    let url = backendUrl + '/api/survey-submissions'
     return fetch(url, {
         method: 'POST',
         headers: {
@@ -233,7 +233,7 @@ export const startPutSurveySubmissions = (data) => {
 
 const putSurveySubmissions = ({ jwt, data, submissionId}) => {
     let Authorization = composeAuth(jwt)
-    let url = backendUrl + `/api/survey-submission/${submissionId}`
+    let url = backendUrl + `/api/survey-submissions`
     return fetch(url, {
         method: 'PUT',
         headers: {

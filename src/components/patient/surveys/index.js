@@ -28,7 +28,7 @@ export default PatientMySurveys = (props) => {
             <ScrollView contentContainerStyle={{ height: '100%', marginTop: 20, marginHorizontal: 20 }}>
                 {allsurveys && allsurveys?.map((survey,index)=>{
                     return (
-                        <View key={index} style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', backgroundColor:"#fff", padding:10, borderRadius:10}}>
+                        <View key={index} style={{flexDirection:'row', justifyContent:'space-between', alignItems:'center', backgroundColor:"#fff", padding:10, borderRadius:10, marginBottom:20}}>
                             <View style={{width:"70%"}}>
                                 <Title>{survey?.name}</Title>
                                 <Paragraph>{survey?.description}</Paragraph>
