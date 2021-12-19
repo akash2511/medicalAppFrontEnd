@@ -37,9 +37,9 @@ export default PatientMyProfile = (props) => {
                     <Text style={{ fontSize: 16, fontWeight: '500', marginTop:10 }}>Do you Smoke:  {profileDetails?.do_you_smoke}</Text>
                     <Text style={{ fontSize: 16, fontWeight: '500', marginVertical:10 }}>Do you Drink:  {profileDetails?.do_you_drink}</Text>
                 </View>
-                <Button mode="contained" onPress={() =>{}} style={{ marginTop: 20 }} labelStyle={{ color: "#fff" }}>
+                {/* <Button mode="contained" onPress={() =>{}} style={{ marginTop: 20 }} labelStyle={{ color: "#fff" }}>
                     {"EDIT"}
-                </Button>
+                </Button> */}
                 <Button mode="contained" onPress={() => dispatch(emitLogoutaction())} style={{ marginTop: 20 }} labelStyle={{ color: "#fff" }}>
                     {"LOGOUT"}
                 </Button>

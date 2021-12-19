@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ScrollView, View, Text, ActivityIndicator } from 'react-native';
 import { Button } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
@@ -27,13 +27,17 @@ export default PatientDashboard = (props) => {
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
 
+    const ScrollViewRef = useRef();
+
     const username = useSelector(getUserName)
     const jwt = useSelector(getJwt)
     const isLoadingGetProfile = useSelector(getIsLoadingGetProfile)
     const isLoadingGetProfilePrev = usePrevious(isLoadingGetProfile)
     const profileDetails = useSelector(getProfileDetails)
     const isLoadingPatientMeal = useSelector(getIsLoadingPatientMeal)
+    const isLoadingPatientMealPrev = usePrevious(isLoadingPatientMeal)
     const isLoadingPatientSelfManagement = useSelector(getIsLoadingPatientSelfManagement)
+    const isLoadingPatientSelfManagementPrev = usePrevious(isLoadingPatientSelfManagement)
     const patientMeal = useSelector(getPatientMeal)
     const patientSelfManagement = useSelector(getPatientSelfManagement)
     const diet = useSelector(geDiet)
@@ -42,6 +46,7 @@ export default PatientDashboard = (props) => {
     const isExerciseLoading = useSelector(getisExerciseLoading)
 
     const [showQuestionaire, setShowQuestionaire ] = useState(false)
+    const [scrollY, setScrollY] = useState(0)
 
     const dietById = _.groupBy(diet,(x)=>x?._id)
     const exerciseById = _.groupBy(exercise,(x)=>x?._id)
@@ -65,6 +70,26 @@ export default PatientDashboard = (props) => {
             setShowQuestionaire(!profileDetails?.questionaire_shown)
         }
     }, [isLoadingGetProfile, isLoadingGetProfilePrev])
+
+    useEffect(() => {
+        if (!isLoadingPatientMeal && isLoadingPatientMeal !== isLoadingPatientMealPrev && isLoadingPatientMealPrev !== undefined){
+            ScrollViewRef?.current?.scrollTo({
+                y: scrollY,
+                x: 0,
+                animated: false,
+            });
+        }
+    }, [isLoadingPatientMeal, isLoadingPatientMealPrev])
+
+    useEffect(() => {
+        if (!isLoadingPatientSelfManagement && isLoadingPatientSelfManagement !== isLoadingPatientSelfManagementPrev && isLoadingPatientSelfManagementPrev !== undefined){
+            ScrollViewRef?.current?.scrollTo({
+                y: scrollY,
+                x: 0,
+                animated: false,
+            });
+        }
+    }, [isLoadingPatientSelfManagement, isLoadingPatientSelfManagementPrev])
 
     const getCaloriesIntake = () => {
         let totalCalories = 0
@@ -128,7 +153,18 @@ export default PatientDashboard = (props) => {
 
     return (
         isLoadingGetProfile || isLoadingPatientMeal || isLoadingPatientSelfManagement || isDietLoading || isExerciseLoading ? <ActivityIndicator /> : showQuestionaire ? <PatientQuestionaire profileDetails={profileDetails}/> : <View>
-            <ScrollView contentContainerStyle={{marginTop: 20, marginHorizontal: 20, paddingBottom:200 }}>
+            <ScrollView 
+                ref={ScrollViewRef}
+
+                // We don't need `onContentSizeChanged`
+                // this onScroll fetches data  when scroll reaches top
+                // then it scrolls to last position as you asked
+
+                onScroll={({ nativeEvent }) => {
+                    setScrollY(nativeEvent?.contentOffset?.y)
+                }}
+                scrollEventThrottle={400}
+                contentContainerStyle={{marginTop: 20, marginHorizontal: 20, paddingBottom:200 }}>
                 <Text style={{ fontWeight: "bold", color: "#000", marginVertical: 10, fontSize: 20 }}>{moment().format("Do MMM YYYY")}</Text>
                 <Text style={{ fontWeight: "700", color: "#000", marginVertical: 10, fontSize: 18 }}>Diet</Text>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
@@ -227,7 +263,7 @@ export default PatientDashboard = (props) => {
                             onChange={value => onChangeSleep(value)}
                             minValue={0}
                             rounded
-                            step={2}
+                            step={1}
                             value={patientSelfManagement?.sleep_in_min ? patientSelfManagement?.sleep_in_min/60 : 0}
                         />
                     </View>

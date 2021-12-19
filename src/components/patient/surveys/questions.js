@@ -213,6 +213,7 @@ export default PatientQuestionaire = (props) => {
             )
         }
         else if (question?.type === "SCALE") {
+            let subQuestion = question?.answers?.filter(item => item?._id == questionAnswers[question?._id]?.[0])?.[0]?.sub_question
             return (
                 <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
                     <Title>{question?.title}</Title>
@@ -233,6 +234,7 @@ export default PatientQuestionaire = (props) => {
                             )
                         })}
                     </View>
+                    {subQuestion && subQuestion?.length ? renderSubAnswers(subQuestion) : null}
                 </View>
             )
         }
@@ -312,6 +314,7 @@ export default PatientQuestionaire = (props) => {
             )
         }
         else if (question?.type === "SCALE") {
+            let subQuestion = question?.answers?.filter(item => item?._id == questionAnswers[question?._id]?.[0])?.[0]?.sub_question
             return (
                 <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
                     <Title>{question?.title}</Title>
@@ -332,6 +335,7 @@ export default PatientQuestionaire = (props) => {
                             )
                         })}
                     </View>
+                    {subQuestion && subQuestion?.length ? renderSubAnswers(subQuestion) : null}
                 </View>
             )
         }
@@ -378,7 +382,7 @@ export default PatientQuestionaire = (props) => {
             </Button>
             <ScrollView contentContainerStyle={{ marginTop: 20, marginHorizontal: 20, paddingBottom: 200 }}>
                 <Text style={{ fontWeight: "bold", color: "#000", marginVertical: 10, fontSize: 20 }}>Question - {presentQuestionNo + 1}/{allSurveyQuestions?.length}</Text>
-                {allSurveyQuestions && allSurveyQuestions?.length ? renderAnswers(): null}
+                {allSurveyQuestions && allSurveyQuestions?.length ? renderAnswers() : null}
                 {allSurveyQuestions && allSurveyQuestions?.length ? <View style={{flexDirection:'row', justifyContent:"space-around"}}>
                     {presentQuestionNo != 0 ? <Button mode="outlined" onPress={() => onPreviousQuestion()}>
                         BACK
@@ -388,8 +392,8 @@ export default PatientQuestionaire = (props) => {
                         SUBMIT
                     </Button>:<Button mode="outlined" onPress={() => onNextQuestion()}>
                         NEXT
-                    </Button>
-                </View>:null}
+                    </Button>}
+                    </View>:null}
             </ScrollView>
         </View>
     );

@@ -68,6 +68,7 @@ export default ExerciseSearchScreen = (props) => {
             "date": moment().format("YYYY-MM-DD")
         }
         if (edit) {
+            delete data.date
             dispatch(startEditPatientSelfManagement({ jwt, data, id: edit?._id }))
         }
         else {
