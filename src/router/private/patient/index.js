@@ -16,6 +16,7 @@ import ExerciseSearchScreen from '../../../components/search/exercise'
 import SupplementsSearchScreen from '../../../components/search/supplements'
 import PatientMySurveys from '../../../components/patient/surveys'
 import PatientSurveyQuestions from '../../../components/patient/surveys/questions'
+import PatientGraphs from '../../../components/graphs/patientProfile'
 
 
 //config
@@ -51,6 +52,13 @@ export default PatientRoute = () => {
             <Drawer.Screen
                 name="Surveys"
                 component={PatientSurveyStack}
+                options={{
+                    unmountOnBlur: true,
+                }}
+            />
+            <Drawer.Screen
+                name="Patient Graphs"
+                component={PatientGraphStack}
                 options={{
                     unmountOnBlur: true,
                 }}
@@ -142,6 +150,33 @@ PatientSurveyStack = () => {
             <Stack.Screen
                 name="PatientSurveyQuestions"
                 component={PatientSurveyQuestions}
+            />
+        </Stack.Navigator>
+    );
+};
+
+PatientGraphStack = () => {
+    return (
+        <Stack.Navigator
+            initialRouteName="Graphs"
+            screenOptions={({ navigation }) => {
+                return {
+                    headerLeft: () => {
+                        return (
+                            <IconButton
+                                icon="menu"
+                                size={20}
+                                onPress={() => navigation.toggleDrawer()}
+                                style={{ marginLeft: -10 }}
+                            />
+                        )
+                    }
+                }
+            }}
+        >
+            <Stack.Screen
+                name="Graphs"
+                component={PatientGraphs}
             />
         </Stack.Navigator>
     );

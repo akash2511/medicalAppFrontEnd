@@ -12,6 +12,7 @@ import DoctorDashboard from '../../../components/doctor'
 import DoctorMyProfile from '../../../components/doctor/myProflie'
 import MyPatientDetails from '../../../components/doctor/patientProfile/index'
 import MedicationSearchScreen from '../../../components/search/medication'
+import DoctorPatientGraphs from '../../../components/graphs/patientProfile'
 
 //config
 const Drawer = createDrawerNavigator();
@@ -38,6 +39,13 @@ export default DoctorRoute = () => {
       <Drawer.Screen
         name="My Profile"
         component={DoctorProfileStack}
+        options={{
+          unmountOnBlur: true,
+        }}
+      />
+      <Drawer.Screen
+        name="Patient Graphs"
+        component={DoctorPatientGraphStack}
         options={{
           unmountOnBlur: true,
         }}
@@ -100,6 +108,33 @@ DoctorProfileStack = () => {
       <Stack.Screen
         name="DoctorMyProfile"
         component={DoctorMyProfile}
+      />
+    </Stack.Navigator>
+  );
+};
+
+DoctorPatientGraphStack = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName="DoctorPatientGraphs"
+      screenOptions={({navigation}) => {
+        return {
+          headerLeft: () => {
+            return (
+              <IconButton
+                icon="menu"
+                size={20}
+                onPress={() => navigation.toggleDrawer()}
+                style={{ marginLeft: -10 }}
+              />
+              )
+          }
+        }
+      }}
+    >
+      <Stack.Screen
+        name="DoctorPatientGraphs"
+        component={DoctorPatientGraphs}
       />
     </Stack.Navigator>
   );

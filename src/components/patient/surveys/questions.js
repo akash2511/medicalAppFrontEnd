@@ -4,6 +4,7 @@ import { Title } from 'react-native-paper';
 import { RadioButton, TextInput, Button } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
 import moment from 'moment';
+import _ from "underscore"
 
 //reducers
 import { getUserName, getJwt, getIsLoadingGetProfile, getProfileDetails } from '../../../redux/reducers/account'
@@ -21,6 +22,8 @@ export default PatientQuestionaire = (props) => {
 
     const [presentQuestionNo,setPresentQuestionNo] = useState("")
     const [questionAnswers,setQuestionAnswers] = useState({})
+    const [showQuestions,setShowQuestions] = useState(true)
+    const [nextAvailableDate, setNextAvailableDate] = useState("")
 
     const { survey } = props?.route?.params;
 
@@ -38,6 +41,9 @@ export default PatientQuestionaire = (props) => {
     const isLoadingGetProfile = useSelector(getIsLoadingGetProfile)
     const isLoadingGetProfilePrev = usePrevious(isLoadingGetProfile)
     const profileDetails = useSelector(getProfileDetails)
+
+    // console.log(survey, "survey");
+    // console.log(allSurveySubmissions, "allSurveySubmissions");
 
     const onChangeValue = (questionId, answerId, type) => {
         if (type == "SINGLE_CHOICE") {
@@ -124,6 +130,17 @@ export default PatientQuestionaire = (props) => {
                 })
             })
             setQuestionAnswers(obj)
+            const submissionByDate = _.groupBy(allSurveySubmissions?.map(item=>{
+                return Object.assign({},item,{
+                    submittedDate: moment(item?.created_at).format("YYYY-MM-DD")
+                })
+            }), (x) => x?.submittedDate)
+            const latestSubmissionDate = Object.keys(submissionByDate)?.sort((a,b)=> new Date(b) - new Date(a))?.[0]
+            const diff = moment().diff(moment(latestSubmissionDate,"YYYY-MM-DD"),"days")
+            if (diff < survey?.frequency_in_days){
+                setShowQuestions(false)
+                setNextAvailableDate(moment(latestSubmissionDate, "YYYY-MM-DD").add(survey?.frequency_in_days,"days"))
+            }
         }
     }, [isLoadingFetchAllSurveySubmissions, isLoadingFetchAllSurveySubmissionsPrev])
 
@@ -380,7 +397,7 @@ export default PatientQuestionaire = (props) => {
             <Button mode="text" icon="chevron-left" onPress={() => props?.navigation?.goBack()} style={{ marginTop: 10, width: '30%', marginHorizontal: 20 }} labelStyle={{ color: "#000" }}>
                 {"GO BACK"}
             </Button>
-            <ScrollView contentContainerStyle={{ marginTop: 20, marginHorizontal: 20, paddingBottom: 200 }}>
+            {showQuestions ? <ScrollView contentContainerStyle={{ marginTop: 20, marginHorizontal: 20, paddingBottom: 200 }}>
                 <Text style={{ fontWeight: "bold", color: "#000", marginVertical: 10, fontSize: 20 }}>Question - {presentQuestionNo + 1}/{allSurveyQuestions?.length}</Text>
                 {allSurveyQuestions && allSurveyQuestions?.length ? renderAnswers() : null}
                 {allSurveyQuestions && allSurveyQuestions?.length ? <View style={{flexDirection:'row', justifyContent:"space-around"}}>
@@ -394,7 +411,7 @@ export default PatientQuestionaire = (props) => {
                         NEXT
                     </Button>}
                     </View>:null}
-            </ScrollView>
+            </ScrollView> : <Text style={{ fontWeight: "bold", color: "#000", marginVertical: 10, fontSize: 20, marginHorizontal: 20 }}>Survey already taken - next available on {moment(nextAvailableDate)?.format("MM-DD-YYYY")}</Text>}
         </View>
     );
 }

@@ -1,8 +1,11 @@
-import * as React from 'react';
+import React,{useEffect} from 'react';
 import { ScrollView, View, Text, Image, Dimensions } from 'react-native';
 import { Button, Title, Paragraph, Card } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
 import { LinearGradient } from 'expo-linear-gradient';
+
+//actions
+import { startFetchCovidGraphData } from '../../redux/actions/graphs'
 
 import {
     LineChart,
@@ -11,22 +14,24 @@ import {
 } from 'react-native-chart-kit'
 import {
     VictoryChart,
-VictoryTheme,
-VictoryArea,
-VictoryPolarAxis } from "victory-native";
-
-//actions
-import { appLogout } from '../../../redux/actions/ui'
+    VictoryTheme,
+    VictoryArea,
+    VictoryPolarAxis } from "victory-native";
 
 //reducers
-import { getUserName } from '../../../redux/reducers/account'
+import { getJwt } from '../../redux/reducers/account'
 
-export default MyPatientProfileDetails = (props) => {
+export default PatientGraphs = (props) => {
     const dispatch = useDispatch();
 
-    const username = useSelector(getUserName)
+    const jwt = useSelector(getJwt)
 
     const screenWidth = Dimensions.get('window').width - 40
+
+    useEffect(() => {
+        props?.navigation?.setOptions({ title: "Graphs" })
+        // dispatch(startFetchCovidGraphData({ jwt, patientId:""}))
+    }, [])
 
     const lineChartConfig = {
         backgroundColor: '#e26a00',
@@ -68,7 +73,7 @@ export default MyPatientProfileDetails = (props) => {
         <ScrollView contentContainerStyle={{marginTop: 10, marginHorizontal: 20, paddingBottom:300 }}>
             <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical:20}}>
                 <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center', marginBottom:10}}>
-                    <Image style={{width:40, height:40, borderRadius:20, marginRight:15}} source={require('../../../../assets/images/sampleProfile.png')} />
+                    <Image style={{width:40, height:40, borderRadius:20, marginRight:15}} source={require('../../../assets/images/sampleProfile.png')} />
                     <Title>Harry</Title>
                 </View>
                 <Paragraph>Treatment Start Date : 12th Nov 2021</Paragraph>
