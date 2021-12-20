@@ -40,6 +40,13 @@ export default PatientGraphs = (props) => {
         decimalPlaces: 2, // optional, defaults to 2dp
         color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     }
+    const lineChartConfigTwo = {
+        backgroundColor: '#e26a00',
+        backgroundGradientFrom: '#2C79FF',
+        backgroundGradientTo: '#4B8DFF',
+        decimalPlaces: 2, // optional, defaults to 2dp
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    }
     const barChartConfig = {
         backgroundColor: '#e26a00',
         backgroundGradientFrom: '#46006C',
@@ -69,17 +76,32 @@ export default PatientGraphs = (props) => {
         }]
     }
 
+    const chartDataTwo = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            data: [
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100,
+                Math.random() * 100
+            ]
+        }]
+    }
+
     return (
         <ScrollView contentContainerStyle={{marginTop: 10, marginHorizontal: 20, paddingBottom:300 }}>
-            <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical:20}}>
+            {/* <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical:20}}>
                 <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center', marginBottom:10}}>
                     <Image style={{width:40, height:40, borderRadius:20, marginRight:15}} source={require('../../../assets/images/sampleProfile.png')} />
-                    <Title>Harry</Title>
+                   
                 </View>
                 <Paragraph>Treatment Start Date : 12th Nov 2021</Paragraph>
                 <Paragraph>Last Visit Date : 12th Nov 2021</Paragraph>
                 <Paragraph>Age : 42</Paragraph>
-            </View>
+            </View> */}
+            <Title style={{marginBottom:10}}>Covid Graph</Title>
             <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
                 <VictoryChart polar
                     theme={VictoryTheme.material}
@@ -152,6 +174,7 @@ export default PatientGraphs = (props) => {
                     <VictoryPolarAxis />
                 </VictoryChart>
             </LinearGradient>
+            <Title style={{marginTop:30}}>Calorie In-Take</Title>
             <LineChart
                 data={chartData}
                 width={screenWidth} // from react-native
@@ -163,6 +186,19 @@ export default PatientGraphs = (props) => {
                     borderRadius: 16
                 }}
             />
+            <Title style={{marginTop:30}}>Calories Burnt</Title>
+            <LineChart
+                data={chartDataTwo}
+                width={screenWidth} // from react-native
+                height={220}
+                chartConfig={lineChartConfigTwo}
+                bezier
+                style={{
+                    marginVertical:10,
+                    borderRadius: 16
+                }}
+            />
+            <Title style={{ marginTop: 30 }}>Sleep</Title>
             <ProgressChart
                 data={[0.4, 0.6, 0.8]}
                 width={screenWidth}
@@ -173,6 +209,7 @@ export default PatientGraphs = (props) => {
                     borderRadius: 16
                 }}
             />
+            <Title style={{ marginTop: 30 }}>Steps</Title>
             <BarChart
                 data={chartData}
                 width={screenWidth}
