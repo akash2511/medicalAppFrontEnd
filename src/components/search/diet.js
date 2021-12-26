@@ -13,7 +13,7 @@ import { startPostPatientMeal, startEditPatientMeal } from '../../redux/actions/
 //reducer
 import { getisDietLoading, geDiet } from '../../redux/reducers/diet'
 import { getJwt } from '../../redux/reducers/account'
-import { getIsLoadingPatientMeal } from '../../redux/reducers/patient'
+import { getIsLoadingPatientMeal, getPatientMeal } from '../../redux/reducers/patient'
 
 //helpers
 import { usePrevious } from '../../helpers/utils'
@@ -27,11 +27,17 @@ export default DietSearchScreen = (props) => {
     const isDietLoading = useSelector(getisDietLoading);
     const diet = useSelector(geDiet);
     const jwt = useSelector(getJwt);
+    const patientMeal = useSelector(getPatientMeal);
     const isLoadingPatientMeal = useSelector(getIsLoadingPatientMeal);
     const isLoadingPatientMealPrev = usePrevious(isLoadingPatientMeal);
+
+    const patientMealIds = patientMeal?.[mealType]?.map((item) => item?.id)
     
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredItems, setFilteredItems] = useState(diet.filter(item => item?.type?.includes(mealType)));
+    const [filteredItems, setFilteredItems] = useState(diet.filter(item => {
+        return item?.type?.includes(mealType) && !(patientMealIds?.includes(item?._id))
+    }
+    ));
 
     
     const onChangeSearch = query => setSearchQuery(query);
@@ -51,19 +57,24 @@ export default DietSearchScreen = (props) => {
 
     useEffect(()=>{
         if (searchQuery && searchQuery.length){
-            setFilteredItems(diet.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()) && item?.type?.includes(mealType)))
+            setFilteredItems(diet.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()) && item?.type?.includes(mealType) && !(patientMealIds?.includes(item?._id)) ))
         }
         else{
-            setFilteredItems(diet.filter(item => item?.type?.includes(mealType)))
+            setFilteredItems(diet.filter(item => item?.type?.includes(mealType) && !(patientMealIds?.includes(item?._id))))
         }
     }, [searchQuery, diet])
 
     const onAddItem = (item) => {
         let data = {
-            [mealType]: [{
+            [mealType]: patientMealIds?.map((item=>{
+                return {
+                    id: item,
+                    "quantity": 1
+                }
+            })).concat([{
                 "id": item?._id,
                 "quantity": 1
-            }],
+            }]),
             "date": moment().format("YYYY-MM-DD")
         }
         if(edit){

@@ -13,7 +13,7 @@ import { startPostPatientSelfManagement, startEditPatientSelfManagement } from '
 //reducer
 import { getisExerciseLoading, getExercise } from '../../redux/reducers/exercise'
 import { getJwt } from '../../redux/reducers/account'
-import { getIsLoadingPatientSelfManagement } from '../../redux/reducers/patient'
+import { getIsLoadingPatientSelfManagement, getPatientSelfManagement } from '../../redux/reducers/patient'
 
 //helpers
 import { usePrevious } from '../../helpers/utils'
@@ -25,11 +25,17 @@ export default ExerciseSearchScreen = (props) => {
     const isExerciseLoading = useSelector(getisExerciseLoading);
     const exercises = useSelector(getExercise);
     const jwt = useSelector(getJwt);
+    const patientSelfManagement = useSelector(getPatientSelfManagement);
     const isLoadingPatientSelfManagement = useSelector(getIsLoadingPatientSelfManagement);
     const isLoadingPatientSelfManagementPrev = usePrevious(isLoadingPatientSelfManagement);
+
+    const selfExercise = patientSelfManagement?.exercise?.map((item) => item?.id)
     
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredItems, setFilteredItems] = useState(exercises);
+    const [filteredItems, setFilteredItems] = useState(exercises.filter(item => {
+        return !(selfExercise?.includes(item?._id))
+    }
+    ));
 
     const { edit } = props?.route?.params;
     
@@ -50,21 +56,29 @@ export default ExerciseSearchScreen = (props) => {
 
     useEffect(()=>{
         if (searchQuery && searchQuery.length){
-            setFilteredItems(exercises.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())))
+            setFilteredItems(exercises.filter(item => !(selfExercise?.includes(item?._id)) && item.name.toLowerCase().includes(searchQuery.toLowerCase())))
         }
         else{
-            setFilteredItems(exercises)
+            setFilteredItems(exercises.filter(item => {
+                return !(selfExercise?.includes(item?._id))
+            }
+            ))
         }
     }, [searchQuery, exercises])
 
     const onAddItem = (item) => {
         let data = {
-            "exercise": [
+            "exercise": selfExercise?.map((item => {
+                return {
+                    id: item,
+                    "duration_in_min": 60
+                }
+            })).concat([
                 {
                     "id": item?._id,
                     "duration_in_min": 60
                 }
-            ],
+            ]),
             "date": moment().format("YYYY-MM-DD")
         }
         if (edit) {

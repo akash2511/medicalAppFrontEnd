@@ -20,8 +20,8 @@ import { getisSupplementsLoading, getSupplements } from '../../redux/reducers/su
 import { fetchProfile } from '../../redux/actions/account'
 import { startFetchPatientMeal, startFetchPatientSelfManagement, startPostPatientMeal, startEditPatientMeal, startPostPatientSelfManagement, startEditPatientSelfManagement } from '../../redux/actions/patient'
 import { startFetchDiet } from '../../redux/actions/diet'
-import { startFetchExercise } from '../../redux/actions/exercise'
 import { startFetchSupplements } from '../../redux/actions/supplements'
+import { startFetchExercise } from '../../redux/actions/exercise'
 
 //components
 import PatientQuestionaire from './questionaire'
@@ -159,15 +159,23 @@ export default PatientDashboard = (props) => {
         }
     }
 
-    const onDelete = (wholeMealArray, item, type) => {      
+    const onDelete = (wholeArray, item, type) => {      
         if (type === "supplements"){
-
+            const filteredArray = wholeArray?.filter((id) => id !== item)
+            let data = {
+                [type]: filteredArray,
+            }
+            dispatch(startEditPatientMeal({ jwt, data, id: patientMeal?._id }))
         }
         else if (type === "exercise"){
-
+            const filteredArray = wholeArray?.filter((id) => id?.id !== item?.id)
+            let data = {
+                "exercise": filteredArray
+            }
+            dispatch(startEditPatientSelfManagement({ jwt, data, id: patientSelfManagement?._id }))
         }
         else{
-            const filteredArray = wholeMealArray?.filter((meal) => meal?.id !== item?.id)
+            const filteredArray = wholeArray?.filter((meal) => meal?.id !== item?.id)
             let data = {
                 [type]: filteredArray,
             }
@@ -288,10 +296,12 @@ export default PatientDashboard = (props) => {
                                 ADD +
                             </Button>
                         </View>
-                        {patientMeal?.supplements && patientMeal?.supplements?.map((item)=>{
+                        {patientMeal?.supplements && patientMeal?.supplements?.map((item, index)=>{
+                            const filteredSupplements = supplements?.filter((sup) => {
+                                return sup?._id === item
+                            })?.[0]
                             return <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
-                                {/* <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text> */}
-                                <Text style={{ fontSize: 16 }}>{item}</Text>
+                                <Text style={{ fontSize: 16, width:'70%' }}>{filteredSupplements?.name}</Text>
                                 <TouchableOpacity onPress={() => onDelete(patientMeal?.supplements, item, "supplements")}>
                                     <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
                                 </TouchableOpacity>

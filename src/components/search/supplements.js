@@ -13,7 +13,7 @@ import { startPostPatientMeal, startEditPatientMeal } from '../../redux/actions/
 //reducer
 import { getisSupplementsLoading, getSupplements} from '../../redux/reducers/supplements'
 import { getJwt } from '../../redux/reducers/account'
-import { getIsLoadingPatientMeal } from '../../redux/reducers/patient'
+import { getIsLoadingPatientMeal, getPatientMeal } from '../../redux/reducers/patient'
 
 //helpers
 import { usePrevious } from '../../helpers/utils'
@@ -27,11 +27,14 @@ export default SupplementsSearchScreen = (props) => {
     const isSupplementsLoading = useSelector(getisSupplementsLoading);
     const supplements = useSelector(getSupplements);
     const jwt = useSelector(getJwt);
+    const patientMeal = useSelector(getPatientMeal);
     const isLoadingPatientMeal = useSelector(getIsLoadingPatientMeal);
     const isLoadingPatientMealPrev = usePrevious(isLoadingPatientMeal);
 
+    const patientSupplementsIds = patientMeal?.supplements?.map((item) => item)
+
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredItems, setFilteredItems] = useState(supplements);
+    const [filteredItems, setFilteredItems] = useState(supplements?.filter((item) => !patientSupplementsIds?.includes(item?._id)));
 
 
     const onChangeSearch = query => setSearchQuery(query);
@@ -51,16 +54,16 @@ export default SupplementsSearchScreen = (props) => {
 
     useEffect(() => {
         if (searchQuery && searchQuery.length) {
-            setFilteredItems(supplements.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())))
+            setFilteredItems(supplements?.filter((item) => !patientSupplementsIds?.includes(item?._id))?.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())))
         }
         else {
-            setFilteredItems(supplements)
+            setFilteredItems(supplements?.filter((item) => !patientSupplementsIds?.includes(item?._id)))
         }
     }, [searchQuery, supplements])
 
     const onAddItem = (item) => {
         let data = {
-            supplements: [item?._id],
+            supplements: patientSupplementsIds?.concat([item?._id]),
             "date": moment().format("YYYY-MM-DD")
         }
         if (edit) {
