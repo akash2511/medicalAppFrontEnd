@@ -12,12 +12,16 @@ import { getUserName, getJwt, getIsLoadingGetProfile, getProfileDetails } from '
 import { getIsLoadingPatientMeal , getIsLoadingPatientSelfManagement , getPatientMeal , getPatientSelfManagement } from '../../redux/reducers/patient'
 import { getisDietLoading, geDiet } from '../../redux/reducers/diet'
 import { getisExerciseLoading, getExercise } from '../../redux/reducers/exercise'
+import { getisSupplementsLoading, getSupplements } from '../../redux/reducers/supplements'
+
+
 
 //actions
 import { fetchProfile } from '../../redux/actions/account'
 import { startFetchPatientMeal, startFetchPatientSelfManagement, startPostPatientMeal, startEditPatientMeal, startPostPatientSelfManagement, startEditPatientSelfManagement } from '../../redux/actions/patient'
 import { startFetchDiet } from '../../redux/actions/diet'
 import { startFetchExercise } from '../../redux/actions/exercise'
+import { startFetchSupplements } from '../../redux/actions/supplements'
 
 //components
 import PatientQuestionaire from './questionaire'
@@ -43,6 +47,8 @@ export default PatientDashboard = (props) => {
     const diet = useSelector(geDiet)
     const isDietLoading = useSelector(getisDietLoading)
     const exercise = useSelector(getExercise)
+    const isSupplementsLoading = useSelector(getisSupplementsLoading)
+    const supplements = useSelector(getSupplements)
     const isExerciseLoading = useSelector(getisExerciseLoading)
 
     const [showQuestionaire, setShowQuestionaire ] = useState(false)
@@ -56,6 +62,7 @@ export default PatientDashboard = (props) => {
         dispatch(fetchProfile({ jwt }))
         dispatch(startFetchDiet({ jwt }))
         dispatch(startFetchExercise({ jwt }))
+        dispatch(startFetchSupplements({ jwt }))
     }, [])
 
     useEffect(() => {
@@ -123,7 +130,7 @@ export default PatientDashboard = (props) => {
     }
 
     const onAddSupplements = () => {
-        props?.navigation.navigate("PatientSupplementsSearch", { edit: patientSelfManagement})
+        props?.navigation.navigate("PatientSupplementsSearch", { edit: patientMeal})
     }
 
     const onChangeHidration = (value) => {
@@ -152,7 +159,7 @@ export default PatientDashboard = (props) => {
     }
 
     return (
-        isLoadingGetProfile || isLoadingPatientMeal || isLoadingPatientSelfManagement || isDietLoading || isExerciseLoading ? <ActivityIndicator /> : showQuestionaire ? <PatientQuestionaire profileDetails={profileDetails}/> : <View>
+        isLoadingGetProfile || isLoadingPatientMeal || isLoadingPatientSelfManagement || isDietLoading || isExerciseLoading || isSupplementsLoading ? <ActivityIndicator /> : showQuestionaire ? <PatientQuestionaire profileDetails={profileDetails}/> : <View>
             <ScrollView 
                 ref={ScrollViewRef}
 
@@ -244,11 +251,7 @@ export default PatientDashboard = (props) => {
                                 ADD +
                             </Button>
                         </View>
-                        {/* {patientSelfManagement?.exercise ? patientSelfManagement?.exercise?.map((item, index) => {
-                            return (
-                                <Text key={index} style={{ fontSize: 16 }}>{exerciseById[item?.id]?.[0]?.name} - {item?.duration_in_min}min</Text>
-                            )
-                        }) : null} */}
+                        {patientMeal?.supplements ? <Text key={index} style={{ fontSize: 16 }}>{patientMeal?.supplements}</Text> :null }
                     </View>
                 </View>
                 <Text style={{ fontWeight: "700", color: "#000", marginVertical: 10, fontSize: 18 }}>Self Management</Text>

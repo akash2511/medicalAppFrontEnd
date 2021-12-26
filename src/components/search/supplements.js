@@ -7,11 +7,11 @@ import { useIsFocused } from '@react-navigation/native';
 import moment from 'moment';
 
 //actions
-import { startFetchDiet } from '../../redux/actions/diet'
+import { startFetchSupplements } from '../../redux/actions/supplements'
 import { startPostPatientMeal, startEditPatientMeal } from '../../redux/actions/patient'
 
 //reducer
-import { getisDietLoading, geDiet } from '../../redux/reducers/diet'
+import { getisSupplementsLoading, getSupplements} from '../../redux/reducers/supplements'
 import { getJwt } from '../../redux/reducers/account'
 import { getIsLoadingPatientMeal } from '../../redux/reducers/patient'
 
@@ -22,24 +22,24 @@ export default SupplementsSearchScreen = (props) => {
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
 
-    const { mealType, edit } = props?.route?.params;
+    const { edit } = props?.route?.params;
 
-    const isDietLoading = useSelector(getisDietLoading);
-    const diet = useSelector(geDiet);
+    const isSupplementsLoading = useSelector(getisSupplementsLoading);
+    const supplements = useSelector(getSupplements);
     const jwt = useSelector(getJwt);
     const isLoadingPatientMeal = useSelector(getIsLoadingPatientMeal);
     const isLoadingPatientMealPrev = usePrevious(isLoadingPatientMeal);
 
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredItems, setFilteredItems] = useState(diet.filter(item => item?.type?.includes(mealType)));
+    const [filteredItems, setFilteredItems] = useState(supplements);
 
 
     const onChangeSearch = query => setSearchQuery(query);
 
     useEffect(() => {
         if (isFocused) {
-            props?.navigation?.setOptions({ title: "Diet" })
-            dispatch(startFetchDiet({ jwt }))
+            props?.navigation?.setOptions({ title: "Supplements" })
+            dispatch(startFetchSupplements({ jwt }))
         }
     }, [isFocused])
 
@@ -51,19 +51,16 @@ export default SupplementsSearchScreen = (props) => {
 
     useEffect(() => {
         if (searchQuery && searchQuery.length) {
-            setFilteredItems(diet.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()) && item?.type?.includes(mealType)))
+            setFilteredItems(supplements.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())))
         }
         else {
-            setFilteredItems(diet.filter(item => item?.type?.includes(mealType)))
+            setFilteredItems(supplements)
         }
-    }, [searchQuery, diet])
+    }, [searchQuery, supplements])
 
     const onAddItem = (item) => {
         let data = {
-            [mealType]: [{
-                "id": item?._id,
-                "quantity": 1
-            }],
+            supplements: item?._id,
             "date": moment().format("YYYY-MM-DD")
         }
         if (edit) {
@@ -87,7 +84,7 @@ export default SupplementsSearchScreen = (props) => {
                 style={{ margin: 20 }}
             />
             {searchQuery.length === 0 ? <Text style={{ fontSize: 16, fontWeight: '300', marginLeft: 20 }}>Recomended</Text> : null}
-            {isDietLoading || isLoadingPatientMeal ? <ActivityIndicator /> :
+            {isSupplementsLoading || isLoadingPatientMeal ? <ActivityIndicator /> :
                 <ScrollView contentContainerStyle={{ paddingBottom: 200 }}>
                     {filteredItems.map((item, index) => {
                         return (
@@ -95,7 +92,6 @@ export default SupplementsSearchScreen = (props) => {
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <View style={{ width: "80%" }}>
                                         <Title>{item.name}</Title>
-                                        <Paragraph>Calories : {item?.calories?.measurement}kcal</Paragraph>
                                     </View>
                                     <Button mode="outlined" onPress={() => onAddItem(item)}>
                                         ADD

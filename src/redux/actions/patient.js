@@ -94,6 +94,7 @@ export const startEditPatientMeal = (data) => {
             const response = await validatedData.json()
             dispatch(emitPatientMealData(response?.data))
         } catch (err) {
+            console.log(err,"err");
             dispatch(emitFail())
         }
     }
