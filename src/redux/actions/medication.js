@@ -1,7 +1,10 @@
 import {
     MEDICATIONS_FETCH_START,
     MEDICATIONS_DATA,
-    MEDICATIONS_FETCH_FAIL
+    MEDICATIONS_FETCH_FAIL,
+    PATIENT_MEDICATIONS_FETCH_START,
+    PATIENT_MEDICATIONS_DATA,
+    PATIENT_MEDICATIONS_FETCH_FAIL
 } from '../actions.js'
 
 import { checkStatus, backendUrl, composeAuth } from '../../helpers/utils'
@@ -49,5 +52,51 @@ const fetchMedications = ({jwt}) => {
             'Content-Type': 'application/json',
             Authorization
         }
+    })
+}
+
+// put patient medication
+const emitPutPatientMedicationStart = () => ({
+    type: PATIENT_MEDICATIONS_FETCH_START
+})
+
+const emitPutPatientMedicationFail = errMsg => ({
+    type: PATIENT_MEDICATIONS_FETCH_FAIL,
+    errMsg
+})
+
+const emitPutPatientMedicationData = data => {
+    return {
+        type: PATIENT_MEDICATIONS_DATA,
+        data
+    }
+}
+
+// fetch medications 
+export const startEditPatientMedication = (data) => {
+    return async (dispatch) => {
+        dispatch(emitPutPatientMedicationStart())
+        try {
+            const receivedData = await editPatientMedication(data)
+            const validatedData = checkStatus(receivedData)
+            const response = await validatedData.json()
+            dispatch(emitPutPatientMedicationData(response?.data))
+        } catch (err) {
+            dispatch(emitPutPatientMedicationFail())
+        }
+    }
+}
+
+const editPatientMedication = ({jwt, data, id}) => {
+    let Authorization = composeAuth(jwt)
+    let url = backendUrl + `/api/medication/${id}`
+    return fetch(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization
+        },
+        body:JSON.stringify(data)
     })
 }
