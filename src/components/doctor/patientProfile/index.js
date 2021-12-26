@@ -43,15 +43,9 @@ export default MyPatientDetails = (props) => {
         if (isFocused){
             props?.navigation?.setOptions({ title: "Prescription" })
             dispatch(startFetchEmr({ jwt, patientId }))
+            dispatch(startFetchProfile({ jwt, profileId: patientId }))
         }
     }, [isFocused])
-
-    useEffect(() => {
-        if (!isEmrLoading && isEmrLoading !== isEmrLoadingPrev && isEmrLoadingPrev !== undefined){
-            const { emr } = emrData
-            dispatch(startFetchProfile({ jwt, profileId: emr?.patient_id }))
-        }
-    }, [isEmrLoading, isEmrLoadingPrev])
 
     const { diets, emr, exercises, medication, self_management, supplements } = emrData
     const profileData = profileDetails?.[0]

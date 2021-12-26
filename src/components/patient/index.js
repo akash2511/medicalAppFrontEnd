@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { ScrollView, View, Text, ActivityIndicator } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Button, IconButton, Colors } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from '@react-navigation/native';
 import moment from 'moment';
@@ -26,6 +26,7 @@ import { startFetchSupplements } from '../../redux/actions/supplements'
 //components
 import PatientQuestionaire from './questionaire'
 import { usePrevious } from '../../helpers/utils';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default PatientDashboard = (props) => {
     const dispatch = useDispatch();
@@ -158,6 +159,22 @@ export default PatientDashboard = (props) => {
         }
     }
 
+    const onDelete = (wholeMealArray, item, type) => {      
+        if (type === "supplements"){
+
+        }
+        else if (type === "exercise"){
+
+        }
+        else{
+            const filteredArray = wholeMealArray?.filter((meal) => meal?.id !== item?.id)
+            let data = {
+                [type]: filteredArray,
+            }
+            dispatch(startEditPatientMeal({ jwt, data, id: patientMeal?._id }))
+        }
+    }
+
     return (
         isLoadingGetProfile || isLoadingPatientMeal || isLoadingPatientSelfManagement || isDietLoading || isExerciseLoading || isSupplementsLoading ? <ActivityIndicator /> : showQuestionaire ? <PatientQuestionaire profileDetails={profileDetails}/> : <View>
             <ScrollView 
@@ -199,7 +216,12 @@ export default PatientDashboard = (props) => {
                         </View>
                         {patientMeal?.['breakfast'] ? patientMeal['breakfast']?.map((item, index) => {
                             return (
-                                <Text key={index} style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                <View key={index} style={{flexDirection:'row', justifyContent:'space-between', alignItems:'baseline', marginVertical:10}}>
+                                    <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                    <TouchableOpacity onPress={() => onDelete(patientMeal['breakfast'], item,"breakfast")}>
+                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                    </TouchableOpacity>
+                                </View>
                             )
                         }) : null}
                     </View>
@@ -212,7 +234,12 @@ export default PatientDashboard = (props) => {
                         </View>
                         {patientMeal?.['lunch'] ? patientMeal['lunch']?.map((item, index) => {
                             return (
-                                <Text key={index} style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                    <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                    <TouchableOpacity onPress={() => onDelete(patientMeal['lunch'], item, "lunch")}>
+                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                    </TouchableOpacity>
+                                </View>
                             )
                         }) : null}
                     </View>
@@ -225,7 +252,12 @@ export default PatientDashboard = (props) => {
                         </View>
                         {patientMeal?.['snack'] ? patientMeal['snack']?.map((item, index) => {
                             return (
-                                <Text key={index} style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                    <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                    <TouchableOpacity onPress={() => onDelete(patientMeal['snack'], item, "snack")}>
+                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                    </TouchableOpacity>
+                                </View>
                             )
                         }) : null}
                     </View>
@@ -238,7 +270,12 @@ export default PatientDashboard = (props) => {
                         </View>
                         {patientMeal?.['dinner'] ? patientMeal['dinner']?.map((item, index) => {
                             return (
-                                <Text key={index} style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                    <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                    <TouchableOpacity onPress={() => onDelete(patientMeal['dinner'], item, "dinner")}>
+                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                    </TouchableOpacity>
+                                </View>
                             )
                         }) : null}
                     </View>
@@ -251,7 +288,15 @@ export default PatientDashboard = (props) => {
                                 ADD +
                             </Button>
                         </View>
-                        {patientMeal?.supplements ? <Text key={index} style={{ fontSize: 16 }}>{patientMeal?.supplements}</Text> :null }
+                        {patientMeal?.supplements && patientMeal?.supplements?.map((item)=>{
+                            return <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                {/* <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text> */}
+                                <Text style={{ fontSize: 16 }}>{item}</Text>
+                                <TouchableOpacity onPress={() => onDelete(patientMeal?.supplements, item, "supplements")}>
+                                    <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                </TouchableOpacity>
+                            </View>
+                        })}
                     </View>
                 </View>
                 <Text style={{ fontWeight: "700", color: "#000", marginVertical: 10, fontSize: 18 }}>Self Management</Text>
@@ -281,7 +326,12 @@ export default PatientDashboard = (props) => {
                         </View>
                         {patientSelfManagement?.exercise ? patientSelfManagement?.exercise?.map((item, index) => {
                             return (
-                                <Text key={index} style={{ fontSize: 16 }}>{exerciseById[item?.id]?.[0]?.name} - {item?.duration_in_min}min</Text>
+                                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                <Text style={{ fontSize: 16 }}>{exerciseById[item?.id]?.[0]?.name} - {item?.duration_in_min}min</Text>
+                                    <TouchableOpacity onPress={() => onDelete(patientSelfManagement?.exercise, item, "exercise")}>
+                                    <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                </TouchableOpacity>
+                            </View>
                             )
                         }) : null}
                     </View>

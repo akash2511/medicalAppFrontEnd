@@ -60,7 +60,7 @@ export default SupplementsSearchScreen = (props) => {
 
     const onAddItem = (item) => {
         let data = {
-            supplements: item?._id,
+            supplements: [item?._id],
             "date": moment().format("YYYY-MM-DD")
         }
         if (edit) {

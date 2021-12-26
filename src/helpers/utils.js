@@ -4,7 +4,7 @@ import customError from 'custom-error'
 export const AuthError = customError('AuthError')
 export const ApiError = customError('ApiError')
 
-export const backendUrl = 'http://20.127.4.20:3004'
+export const backendUrl = 'http://localhost:3004'
 
 // /* API Response Helpers */
 //
