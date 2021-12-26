@@ -237,23 +237,23 @@ export default PatientQuestionaire = (props) => {
             return (
                 <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
                     <Title>{question?.title}</Title>
-                    <View style={{flexDirection:'row',justifyContent:'flex-start', flexWrap:'wrap'}}>
-                        {question?.answers.map((answer, index) => {
-                            return (
-                                <TouchableOpacity key={index} style={{ flexDirection: 'column', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
-                                    <Text>
-                                        {answer?.title}
-                                    </Text>
-                                    <RadioButton.Android
-                                        value="first"
-                                        status={questionAnswers[question?._id]?.[0] === answer?._id ? 'checked' : 'unchecked'}
-                                        onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}
-                                        style={{height:10, width:10}}
-                                    />
-                                </TouchableOpacity>
-                            )
-                        })}
-                    </View>
+                    <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionAnswers[question?._id]?.[0]}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
+                            {question?.answers.map((answer, index) => {
+                                return (
+                                    <TouchableOpacity key={index} style={{ flexDirection: 'column', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                        <Text>
+                                            {answer?.title}
+                                        </Text>
+                                        <RadioButton.Android
+                                            value={answer?._id}
+                                            style={{ height: 10, width: 10 }}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            })}
+                        </View>
+                    </RadioButton.Group>
                     {subQuestion && subQuestion?.length ? renderSubAnswers(subQuestion) : null}
                 </View>
             )
@@ -338,23 +338,23 @@ export default PatientQuestionaire = (props) => {
             return (
                 <View style={{ backgroundColor: '#fff', borderRadius: 10, padding: 10, marginBottom: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
                     <Title>{question?.title}</Title>
-                    <View style={{flexDirection:'row',justifyContent:'flex-start', flexWrap:'wrap'}}>
-                        {question?.answers.map((answer, index) => {
-                            return (
-                                <TouchableOpacity key={index} style={{ flexDirection: 'column', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
-                                    <Text>
-                                        {answer?.title}
-                                    </Text>
-                                    <RadioButton.Android
-                                        value="first"
-                                        status={questionAnswers[question?._id]?.[0] === answer?._id ? 'checked' : 'unchecked'}
-                                        onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}
-                                        style={{height:10, width:10}}
-                                    />
-                                </TouchableOpacity>
-                            )
-                        })}
-                    </View>
+                    <RadioButton.Group onValueChange={newValue => onChangeValue(question?._id, newValue, question?.type)} value={questionAnswers[question?._id]?.[0]}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap' }}>
+                            {question?.answers.map((answer, index) => {
+                                return (
+                                    <TouchableOpacity key={index} style={{ flexDirection: 'column', alignItems: 'center' }} onPress={() => onChangeValue(question?._id, answer?._id, question?.type)}>
+                                        <Text>
+                                            {answer?.title}
+                                        </Text>
+                                        <RadioButton.Android
+                                            value={answer?._id}
+                                            style={{ height: 10, width: 10 }}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            })}
+                        </View>
+                    </RadioButton.Group>
                     {subQuestion && subQuestion?.length ? renderSubAnswers(subQuestion) : null}
                 </View>
             )
