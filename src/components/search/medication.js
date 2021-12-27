@@ -62,6 +62,7 @@ export default MedicationSearchScreen = (props) => {
             "emr_id": emrId,
             "notes": "text"
         }
+        console.log(data,"data");
         dispatch(startPostPrescription({jwt,data}))
     }
 
@@ -78,7 +79,7 @@ export default MedicationSearchScreen = (props) => {
             />
             {searchQuery.length === 0 ? <Text style={{ fontSize: 16, fontWeight: '300', marginLeft: 20 }}>Recomended</Text> : null}
             {isMedicationsLoading || isPrescriptionLoading? <ActivityIndicator /> :
-            <ScrollView contentContainerStyle={{height:'100%'}}>
+            <ScrollView contentContainerStyle={{paddingBottom:200}}>
                 {filteredItems.map((item,index)=>{
                     return(
                         <View style={{marginHorizontal:20, marginTop:20, backgroundColor:"#fff", padding:10, borderRadius:5}} key={index}>

@@ -47,7 +47,7 @@ export default MyPatientDetails = (props) => {
         }
     }, [isFocused])
 
-    const { diets, emr, exercises, medication, self_management, supplements } = emrData
+    const { diets, emr, exercises, medication, supplements } = emrData
     const profileData = profileDetails?.[0]
 
     return (
@@ -64,9 +64,16 @@ export default MyPatientDetails = (props) => {
                     <Paragraph>Treatment Start Date : {moment(profileData?.created_at).format("Do MMM YYYY")}</Paragraph>
                     <Paragraph>Last Visit Date : {moment(profileData?.updated_at).format("Do MMM YYYY")}</Paragraph>
                     <Paragraph>Age : {moment().diff(moment(profileData?.dob, "DD-MM-YYYY"), 'years')} years</Paragraph>
+                    <Paragraph>Current Diagnosis : {emr?.current_diagnosis_or_disease}</Paragraph>
+                    <Paragraph>Blood Pressure : {emr?.health_vitals?.bp}</Paragraph>
+                    <Paragraph>Heart Rate : {emr?.health_vitals?.heart_rate}</Paragraph>
+                    <Paragraph>Hemoglobin : {emr?.health_vitals?.hemoglobin}</Paragraph>
+                    <Paragraph>Platelet Count : {emr?.health_vitals?.platelet_count}</Paragraph>
+                    <Paragraph>Pulse Rate : {emr?.health_vitals?.pulse_rate}</Paragraph>
+                    <Paragraph>Spo2 : {emr?.health_vitals?.spo2}</Paragraph>
                 </View>
                 <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginTop: 20 }}>
-                    <Title>{"Medication : " + medication?.generic_name}</Title>
+                    <Title>Medication : {medication?.generic_name}</Title>
                     <Paragraph>Drug Class : {medication?.drug_class}</Paragraph>
                     <Paragraph>Medication For : {medication?.medication_for}</Paragraph>
                     <Paragraph>Type : {medication?.type}</Paragraph>
@@ -102,10 +109,10 @@ export default MyPatientDetails = (props) => {
                         )
                     })}
                 </View>
-                <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginTop: 20 }}>
+                {/* <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginTop: 20 }}>
                     <Title>{"Sleep :"}</Title>
                     <Paragraph>Duration : {self_management?.sleep_in_min}mins</Paragraph>
-                </View>
+                </View> */}
             </ScrollView>
         </View>
     );

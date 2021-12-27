@@ -72,7 +72,7 @@ const emitPutPatientMedicationData = data => {
     }
 }
 
-// fetch medications 
+// edit patient medications 
 export const startEditPatientMedication = (data) => {
     return async (dispatch) => {
         dispatch(emitPutPatientMedicationStart())
@@ -89,7 +89,7 @@ export const startEditPatientMedication = (data) => {
 
 const editPatientMedication = ({jwt, data, id}) => {
     let Authorization = composeAuth(jwt)
-    let url = backendUrl + `/api/medication/${id}`
+    let url = backendUrl + `/api/patients-medication/${id}`
     return fetch(url, {
         method: 'PUT',
         headers: {

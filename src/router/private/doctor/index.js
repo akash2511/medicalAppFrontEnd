@@ -12,6 +12,9 @@ import DoctorDashboard from '../../../components/doctor'
 import DoctorMyProfile from '../../../components/doctor/myProflie'
 import MyPatientDetails from '../../../components/doctor/patientProfile/index'
 import MedicationSearchScreen from '../../../components/search/medication'
+import DietSearchScreen from '../../../components/search/diet'
+import ExerciseSearchScreen from '../../../components/search/exercise'
+import SupplementsSearchScreen from '../../../components/search/supplements'
 import DoctorPatientGraphs from '../../../components/graphs/patientProfile'
 
 //config
@@ -82,6 +85,9 @@ DoctorDashboardStack = () => {
         component={MyPatientDetails}
       />
       <Stack.Screen name="DoctorMedicationSearch" component={MedicationSearchScreen} />
+      <Stack.Screen name="DoctorDietSearch" component={DietSearchScreen} />
+      <Stack.Screen name="DoctorExerciseSearch" component={ExerciseSearchScreen} />
+      <Stack.Screen name="DoctorSupplementsSearch" component={SupplementsSearchScreen} />
     </Stack.Navigator>
   );
 };
