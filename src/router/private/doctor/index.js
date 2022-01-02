@@ -15,7 +15,7 @@ import MedicationSearchScreen from '../../../components/search/medication'
 import DietSearchScreen from '../../../components/search/diet'
 import ExerciseSearchScreen from '../../../components/search/exercise'
 import SupplementsSearchScreen from '../../../components/search/supplements'
-import DoctorPatientGraphs from '../../../components/graphs/patientProfile'
+import DoctorPatientGraphs from '../../../components/graphs'
 
 //config
 const Drawer = createDrawerNavigator();
@@ -42,13 +42,6 @@ export default DoctorRoute = () => {
       <Drawer.Screen
         name="My Profile"
         component={DoctorProfileStack}
-        options={{
-          unmountOnBlur: true,
-        }}
-      />
-      <Drawer.Screen
-        name="Patient Graphs"
-        component={DoctorPatientGraphStack}
         options={{
           unmountOnBlur: true,
         }}
@@ -88,6 +81,10 @@ DoctorDashboardStack = () => {
       <Stack.Screen name="DoctorDietSearch" component={DietSearchScreen} />
       <Stack.Screen name="DoctorExerciseSearch" component={ExerciseSearchScreen} />
       <Stack.Screen name="DoctorSupplementsSearch" component={SupplementsSearchScreen} />
+      <Stack.Screen
+        name="DoctorPatientGraphs"
+        component={DoctorPatientGraphs}
+      />
     </Stack.Navigator>
   );
 };
@@ -114,33 +111,6 @@ DoctorProfileStack = () => {
       <Stack.Screen
         name="DoctorMyProfile"
         component={DoctorMyProfile}
-      />
-    </Stack.Navigator>
-  );
-};
-
-DoctorPatientGraphStack = () => {
-  return (
-    <Stack.Navigator
-      initialRouteName="DoctorPatientGraphs"
-      screenOptions={({navigation}) => {
-        return {
-          headerLeft: () => {
-            return (
-              <IconButton
-                icon="menu"
-                size={20}
-                onPress={() => navigation.toggleDrawer()}
-                style={{ marginLeft: -10 }}
-              />
-              )
-          }
-        }
-      }}
-    >
-      <Stack.Screen
-        name="DoctorPatientGraphs"
-        component={DoctorPatientGraphs}
       />
     </Stack.Navigator>
   );

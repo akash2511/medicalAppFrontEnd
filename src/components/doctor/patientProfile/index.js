@@ -72,6 +72,9 @@ export default MyPatientDetails = (props) => {
                     <Paragraph>Pulse Rate : {emr?.health_vitals?.pulse_rate}</Paragraph>
                     <Paragraph>Spo2 : {emr?.health_vitals?.spo2}</Paragraph>
                 </View>
+                <Button mode="outlined" style={{ margin: 10 }} onPress={() => props?.navigation.navigate('DoctorPatientGraphs', { patientId: patientId })}>
+                   View Graphs
+                </Button>
                 <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginTop: 20 }}>
                     <Title>Medication : {medication?.generic_name}</Title>
                     <Paragraph>Drug Class : {medication?.drug_class}</Paragraph>

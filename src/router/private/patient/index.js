@@ -16,7 +16,7 @@ import ExerciseSearchScreen from '../../../components/search/exercise'
 import SupplementsSearchScreen from '../../../components/search/supplements'
 import PatientMySurveys from '../../../components/patient/surveys'
 import PatientSurveyQuestions from '../../../components/patient/surveys/questions'
-import PatientGraphs from '../../../components/graphs/patientProfile'
+import PatientGraphs from '../../../components/graphs'
 
 
 //config
