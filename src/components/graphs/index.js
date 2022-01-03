@@ -19,11 +19,12 @@ import {
     VictoryChart,
     VictoryTheme,
     VictoryArea,
-    VictoryPolarAxis } from "victory-native";
+    VictoryPolarAxis,
+    VictoryLegend } from "victory-native";
 
 //reducers
 import { getJwt, getIsLoadingGetProfile, getProfileDetails } from '../../redux/reducers/account'
-import { getIsLoadingCaloriesBurnt, getCaloriesBurntGraph, getIsLoadingCaloriesIntake, getCaloriesIntakeGraph, getIsLoadingSleepGraph, getSleepGraph } from '../../redux/reducers/graph'
+import { getIsLoadingCaloriesBurnt, getCaloriesBurntGraph, getIsLoadingCaloriesIntake, getCaloriesIntakeGraph, getIsLoadingSleepGraph, getSleepGraph, getIsCovidGraphLoading, getCovidGraph } from '../../redux/reducers/graph'
 import { usePrevious } from '../../helpers/utils'
 
 export default PatientGraphs = (props) => {
@@ -39,6 +40,9 @@ export default PatientGraphs = (props) => {
     const sleepGraph = useSelector(getSleepGraph)
     const isLoadingSleepGraph = useSelector(getIsLoadingSleepGraph)
     const isLoadingSleepGraphPrev = usePrevious(isLoadingSleepGraph)
+    const covidGraph = useSelector(getCovidGraph)
+    const isCovidGraphLoading = useSelector(getIsCovidGraphLoading)
+    const isCovidGraphLoadingPrev = usePrevious(isCovidGraphLoading)
     const isLoadingGetProfile = useSelector(getIsLoadingGetProfile)
     const isLoadingGetProfilePrev = usePrevious(isLoadingGetProfile)
     const profileDetails = useSelector(getProfileDetails)
@@ -132,6 +136,20 @@ export default PatientGraphs = (props) => {
         }
     }, [isLoadingSleepGraph, isLoadingSleepGraphPrev])
 
+    useEffect(() => {
+        if (!isCovidGraphLoading && isCovidGraphLoading !== isCovidGraphLoadingPrev && isCovidGraphLoadingPrev !== undefined){
+            console.log(covidGraph,"covidGraph");
+            // const labels = Object.keys(sleepGraph)?.map((key) => moment(key,"YYYY/MM/DD").format("D/MM"))
+            // const values = Object.keys(sleepGraph)?.map((key) => sleepGraph[key]?.sleep_in_min ? sleepGraph[key]?.sleep_in_min : 0)
+            // setSleepData({
+            //     labels: labels,
+            //     datasets: [{
+            //         data: values
+            //     }]
+            // })
+        }
+    }, [isCovidGraphLoading, isCovidGraphLoadingPrev])
+
     const CaloriesIntakeConfig = {
         backgroundColor: '#e26a00',
         backgroundGradientFrom: '#2C79FF',
@@ -218,25 +236,18 @@ export default PatientGraphs = (props) => {
                             { x: 4, y: 9, y0: 0 },
                             { x: 5, y: 10, y0: 0 }
                         ]} />
-                    <VictoryArea
-                        style={{
-                            data: {
-                                fill: "#3058EE", fillOpacity: 0.7, stroke: "#c43a31", strokeWidth: 1
-                            },
-                            labels: {
-                                fontSize: 15,
-                                color: "#fff"
-                            },
-                            parent: { border: "1px solid #000" }
-                        }}
-                        data={[
-                            { x: 1, y: 10, y0: 0 },
-                            { x: 2, y: 8, y0: 0 },
-                            { x: 3, y: 3, y0: 0 },
-                            { x: 4, y: 6, y0: 0 },
-                            { x: 5, y: 8, y0: 0 }
-                        ]} />
                     <VictoryPolarAxis />
+                    <VictoryLegend x={20} y={320}
+                        title=""
+                        centerTitle
+                        orientation="horizontal"
+                        gutter={20}
+                        style={{ title: { fontSize: 20 } }}
+                        data={[
+                            { name: "Pre-Covid", symbol: { fill: "#c43a31" } },
+                            { name: "Post-Covid", symbol: { fill: "#27F03F" } }
+                        ]}
+                    />
                 </VictoryChart>
             </LinearGradient>
             <Title style={{marginTop:30}}>Calorie In-Take(kcal)</Title>
