@@ -8,12 +8,12 @@ import moment from 'moment';
 
 //actions
 import { startFetchSupplements } from '../../redux/actions/supplements'
-import { startPostPatientMeal, startEditPatientMeal } from '../../redux/actions/patient'
+import { startPostPatientMeal, startEditPatientMeal, startPatchPatientMedication } from '../../redux/actions/patient'
 
 //reducer
 import { getisSupplementsLoading, getSupplements} from '../../redux/reducers/supplements'
-import { getJwt } from '../../redux/reducers/account'
-import { getIsLoadingPatientMeal, getPatientMeal } from '../../redux/reducers/patient'
+import { getJwt, getLevel } from '../../redux/reducers/account'
+import { getIsLoadingPatientMeal, getPatientMeal, getIsLoadingPatientMedication } from '../../redux/reducers/patient'
 
 //helpers
 import { usePrevious } from '../../helpers/utils'
@@ -27,11 +27,14 @@ export default SupplementsSearchScreen = (props) => {
     const isSupplementsLoading = useSelector(getisSupplementsLoading);
     const supplements = useSelector(getSupplements);
     const jwt = useSelector(getJwt);
+    const level = useSelector(getLevel);
     const patientMeal = useSelector(getPatientMeal);
     const isLoadingPatientMeal = useSelector(getIsLoadingPatientMeal);
     const isLoadingPatientMealPrev = usePrevious(isLoadingPatientMeal);
+    const isLoadingPatientMedication = useSelector(getIsLoadingPatientMedication);
+    const isLoadingPatientMedicationPrev = usePrevious(isLoadingPatientMedication);
 
-    const patientSupplementsIds = patientMeal?.supplements?.map((item) => item)
+    const patientSupplementsIds = patientMeal?.supplements ? patientMeal?.supplements?.map((item) => item) : edit?.supplement_ids?.map((item) => item)
 
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredItems, setFilteredItems] = useState(supplements?.filter((item) => !patientSupplementsIds?.includes(item?._id)));
@@ -53,6 +56,12 @@ export default SupplementsSearchScreen = (props) => {
     }, [isLoadingPatientMeal, isLoadingPatientMealPrev])
 
     useEffect(() => {
+        if (!isLoadingPatientMedication && isLoadingPatientMedication !== isLoadingPatientMedicationPrev && isLoadingPatientMedicationPrev !== undefined) {
+            props?.navigation?.goBack()
+        }
+    }, [isLoadingPatientMedication, isLoadingPatientMedicationPrev])
+
+    useEffect(() => {
         if (searchQuery && searchQuery.length) {
             setFilteredItems(supplements?.filter((item) => !patientSupplementsIds?.includes(item?._id))?.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())))
         }
@@ -62,16 +71,24 @@ export default SupplementsSearchScreen = (props) => {
     }, [searchQuery, supplements])
 
     const onAddItem = (item) => {
-        let data = {
-            supplements: patientSupplementsIds?.concat([item?._id]),
-            "date": moment().format("YYYY-MM-DD")
-        }
-        if (edit) {
-            delete data.date;
-            dispatch(startEditPatientMeal({ jwt, data, id: edit?._id }))
+        if (level === "doctor") {
+            let data = {
+                "supplement_ids": edit?.supplement_ids ? edit?.supplement_ids?.concat([item?._id]) : [item?._id]
+            }
+            dispatch(startPatchPatientMedication({ jwt, data, id: edit?._id }))
         }
         else {
-            dispatch(startPostPatientMeal({ jwt, data }))
+            let data = {
+                supplements: patientSupplementsIds?.concat([item?._id]),
+                "date": moment().format("YYYY-MM-DD")
+            }
+            if (edit) {
+                delete data.date;
+                dispatch(startEditPatientMeal({ jwt, data, id: edit?._id }))
+            }
+            else {
+                dispatch(startPostPatientMeal({ jwt, data }))
+            }
         }
     }
 

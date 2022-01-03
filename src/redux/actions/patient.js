@@ -2,6 +2,9 @@ import {
     PATIENT_MEAL_START,
     PATIENT_MEAL_DATA,
     PATIENT_MEAL_FAIL,
+    PATIENT_MEDICATION_START,
+    PATIENT_MEDICATION_DATA,
+    PATIENT_MEDICATION_FAIL,
     PATIENT_SELF_MANAGEMENT_START,
     PATIENT_SELF_MANAGEMENT_FAIL,
     PATIENT_SELF_MANAGEMENT_DATA
@@ -9,6 +12,50 @@ import {
 
 import { checkStatus, backendUrl, composeAuth } from '../../helpers/utils'
 import moment from 'moment'
+
+const emitPatientMedicationStart = () => ({
+    type: PATIENT_MEDICATION_START
+})
+
+const emitPatientMedicationFail = () => ({
+    type: PATIENT_MEDICATION_FAIL,
+})
+
+const emitPatientMedicationData = data => {
+    return {
+        type: PATIENT_MEDICATION_DATA,
+        data
+    }
+}
+
+// fetch meal 
+export const startPatchPatientMedication = (data) => {
+    return async (dispatch) => {
+        dispatch(emitPatientMedicationStart())
+        try {
+            const receivedData = await patchPatientMedication(data)
+            const validatedData = checkStatus(receivedData)
+            const response = await validatedData.json()
+            dispatch(emitPatientMedicationData(response?.data))
+        } catch (err) {
+            dispatch(emitPatientMedicationFail())
+        }
+    }
+}
+
+const patchPatientMedication = ({jwt, data, id}) => {
+    let Authorization = composeAuth(jwt)
+    let url = backendUrl + `/api/patients-medication/${id}`
+    return fetch(url, {
+        method: 'PUT',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization
+        },
+        body:JSON.stringify(data)
+    })
+}
 
 // get requests
 

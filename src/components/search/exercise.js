@@ -8,12 +8,12 @@ import moment from 'moment';
 
 //actions
 import { startFetchExercise } from '../../redux/actions/exercise'
-import { startPostPatientSelfManagement, startEditPatientSelfManagement } from '../../redux/actions/patient'
+import { startPostPatientSelfManagement, startEditPatientSelfManagement, startPatchPatientMedication } from '../../redux/actions/patient'
 
 //reducer
 import { getisExerciseLoading, getExercise } from '../../redux/reducers/exercise'
-import { getJwt } from '../../redux/reducers/account'
-import { getIsLoadingPatientSelfManagement, getPatientSelfManagement } from '../../redux/reducers/patient'
+import { getJwt, getLevel } from '../../redux/reducers/account'
+import { getIsLoadingPatientSelfManagement, getPatientSelfManagement, getIsLoadingPatientMedication } from '../../redux/reducers/patient'
 
 //helpers
 import { usePrevious } from '../../helpers/utils'
@@ -21,23 +21,26 @@ import { usePrevious } from '../../helpers/utils'
 export default ExerciseSearchScreen = (props) => {
     const dispatch = useDispatch();
     const isFocused = useIsFocused();
+
+    const { edit } = props?.route?.params;
     
     const isExerciseLoading = useSelector(getisExerciseLoading);
     const exercises = useSelector(getExercise);
     const jwt = useSelector(getJwt);
+    const level = useSelector(getLevel);
     const patientSelfManagement = useSelector(getPatientSelfManagement);
     const isLoadingPatientSelfManagement = useSelector(getIsLoadingPatientSelfManagement);
     const isLoadingPatientSelfManagementPrev = usePrevious(isLoadingPatientSelfManagement);
+    const isLoadingPatientMedication = useSelector(getIsLoadingPatientMedication);
+    const isLoadingPatientMedicationPrev = usePrevious(isLoadingPatientMedication);
 
-    const selfExercise = patientSelfManagement?.exercise?.map((item) => item?.id)
+    const selfExercise = patientSelfManagement?.exercise ? patientSelfManagement?.exercise?.map((item) => item?.id) : edit?.exercise_ids?.map((item) => item)
     
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredItems, setFilteredItems] = useState(exercises.filter(item => {
         return !(selfExercise?.includes(item?._id))
     }
     ));
-
-    const { edit } = props?.route?.params;
     
     const onChangeSearch = query => setSearchQuery(query);
 
@@ -54,6 +57,12 @@ export default ExerciseSearchScreen = (props) => {
         }
     }, [isLoadingPatientSelfManagement, isLoadingPatientSelfManagementPrev])
 
+    useEffect(() => {
+        if (!isLoadingPatientMedication && isLoadingPatientMedication !== isLoadingPatientMedicationPrev && isLoadingPatientMedicationPrev !== undefined) {
+            props?.navigation?.goBack()
+        }
+    }, [isLoadingPatientMedication, isLoadingPatientMedicationPrev])
+
     useEffect(()=>{
         if (searchQuery && searchQuery.length){
             setFilteredItems(exercises.filter(item => !(selfExercise?.includes(item?._id)) && item.name.toLowerCase().includes(searchQuery.toLowerCase())))
@@ -67,26 +76,34 @@ export default ExerciseSearchScreen = (props) => {
     }, [searchQuery, exercises])
 
     const onAddItem = (item) => {
-        let data = {
-            "exercise": selfExercise?.map((item => {
-                return {
-                    id: item,
-                    "duration_in_min": 60
-                }
-            })).concat([
-                {
-                    "id": item?._id,
-                    "duration_in_min": 60
-                }
-            ]),
-            "date": moment().format("YYYY-MM-DD")
-        }
-        if (edit) {
-            delete data.date
-            dispatch(startEditPatientSelfManagement({ jwt, data, id: edit?._id }))
+        if (level === "doctor") {
+            let data = {
+                "exercise_ids": edit?.exercise_ids ? edit?.exercise_ids?.concat([item?._id]) : [item?._id]
+            }
+            dispatch(startPatchPatientMedication({ jwt, data, id: edit?._id }))
         }
         else {
-            dispatch(startPostPatientSelfManagement({ jwt, data }))
+            let data = {
+                "exercise": selfExercise?.map((item => {
+                    return {
+                        id: item,
+                        "duration_in_min": 60
+                    }
+                })).concat([
+                    {
+                        "id": item?._id,
+                        "duration_in_min": 60
+                    }
+                ]),
+                "date": moment().format("YYYY-MM-DD")
+            }
+            if (edit) {
+                delete data.date
+                dispatch(startEditPatientSelfManagement({ jwt, data, id: edit?._id }))
+            }
+            else {
+                dispatch(startPostPatientSelfManagement({ jwt, data }))
+            }
         }
     }
 

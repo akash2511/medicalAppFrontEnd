@@ -8,12 +8,12 @@ import moment from 'moment';
 
 //actions
 import { startFetchDiet } from '../../redux/actions/diet'
-import { startPostPatientMeal, startEditPatientMeal } from '../../redux/actions/patient'
+import { startPostPatientMeal, startEditPatientMeal, startPatchPatientMedication } from '../../redux/actions/patient'
 
 //reducer
 import { getisDietLoading, geDiet } from '../../redux/reducers/diet'
-import { getJwt } from '../../redux/reducers/account'
-import { getIsLoadingPatientMeal, getPatientMeal } from '../../redux/reducers/patient'
+import { getJwt, getLevel } from '../../redux/reducers/account'
+import { getIsLoadingPatientMeal, getPatientMeal, getIsLoadingPatientMedication } from '../../redux/reducers/patient'
 
 //helpers
 import { usePrevious } from '../../helpers/utils'
@@ -27,18 +27,20 @@ export default DietSearchScreen = (props) => {
     const isDietLoading = useSelector(getisDietLoading);
     const diet = useSelector(geDiet);
     const jwt = useSelector(getJwt);
+    const level = useSelector(getLevel);
     const patientMeal = useSelector(getPatientMeal);
     const isLoadingPatientMeal = useSelector(getIsLoadingPatientMeal);
     const isLoadingPatientMealPrev = usePrevious(isLoadingPatientMeal);
+    const isLoadingPatientMedication = useSelector(getIsLoadingPatientMedication);
+    const isLoadingPatientMedicationPrev = usePrevious(isLoadingPatientMedication);
 
-    const patientMealIds = patientMeal?.[mealType]?.map((item) => item?.id)
+    const patientMealIds = patientMeal?.[mealType] ? patientMeal?.[mealType]?.map((item) => item?.id) : edit?.[mealType]?.map((item) => item?.diet_id)
     
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredItems, setFilteredItems] = useState(diet.filter(item => {
         return item?.type?.includes(mealType) && !(patientMealIds?.includes(item?._id))
     }
     ));
-
     
     const onChangeSearch = query => setSearchQuery(query);
 
@@ -56,6 +58,12 @@ export default DietSearchScreen = (props) => {
     }, [isLoadingPatientMeal, isLoadingPatientMealPrev])
 
     useEffect(()=>{
+        if (!isLoadingPatientMedication && isLoadingPatientMedication !== isLoadingPatientMedicationPrev && isLoadingPatientMedicationPrev !== undefined) {
+            props?.navigation?.goBack()
+        }
+    }, [isLoadingPatientMedication, isLoadingPatientMedicationPrev])
+
+    useEffect(()=>{
         if (searchQuery && searchQuery.length){
             setFilteredItems(diet.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()) && item?.type?.includes(mealType) && !(patientMealIds?.includes(item?._id)) ))
         }
@@ -65,24 +73,43 @@ export default DietSearchScreen = (props) => {
     }, [searchQuery, diet])
 
     const onAddItem = (item) => {
-        let data = {
-            [mealType]: patientMealIds?.map((item=>{
-                return {
-                    id: item,
-                    "quantity": 1
-                }
-            })).concat([{
-                "id": item?._id,
-                "quantity": 1
-            }]),
-            "date": moment().format("YYYY-MM-DD")
-        }
-        if(edit){
-            delete data.date;
-            dispatch(startEditPatientMeal({jwt,data, id:edit?._id}))
+        if (level === "doctor"){
+            let data = {
+                [mealType]: edit?.[mealType] ? edit?.[mealType]?.concat([
+                    {
+                        "diet_id": item?._id,
+                        "servings": item?.serving
+                    }
+                ]) : 
+                [
+                    {
+                        "diet_id": item?._id,
+                        "servings": item?.serving
+                    }
+                ]
+            }
+            dispatch(startPatchPatientMedication({ jwt, data, id: edit?._id }))
         }
         else{
-            dispatch(startPostPatientMeal({jwt,data}))
+            let data = {
+                [mealType]: patientMealIds?.map((item=>{
+                    return {
+                        id: item,
+                        "quantity": 1
+                    }
+                })).concat([{
+                    "id": item?._id,
+                    "quantity": 1
+                }]),
+                "date": moment().format("YYYY-MM-DD")
+            }
+            if(edit){
+                delete data.date;
+                dispatch(startEditPatientMeal({jwt,data, id:edit?._id}))
+            }
+            else{
+                dispatch(startPostPatientMeal({jwt,data}))
+            }
         }
     }
 

@@ -1,13 +1,14 @@
 import React,{useEffect} from 'react';
-import { ScrollView, View, Image, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Image, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import { Button, Title, Paragraph } from 'react-native-paper';
+import { Button, Title, Paragraph,Colors } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
 import moment from 'moment';
 
 //actions
 import { startFetchEmr } from '../../../redux/actions/emr'
 import { startFetchProfile } from '../../../redux/actions/profile'
+import { startPatchPatientMedication } from '../../../redux/actions/patient'
 
 //reducers
 import {
@@ -21,6 +22,9 @@ import {
     getIsProfileLoading, 
     getProfileDetails
 } from '../../../redux/reducers/profile'
+import {
+    getIsLoadingPatientMedication
+} from '../../../redux/reducers/patient'
 
 //helpers
 import { usePrevious } from '../../../helpers/utils'
@@ -34,10 +38,11 @@ export default MyPatientDetails = (props) => {
 
     const jwt = useSelector(getJwt);
     const isEmrLoading = useSelector(getIsEmrLoading);
-    const isEmrLoadingPrev = usePrevious(isEmrLoading);
     const emrData = useSelector(getAllEmrs);
     const isProfileLoading = useSelector(getIsProfileLoading);
     const profileDetails = useSelector(getProfileDetails);
+    const isLoadingPatientMedication = useSelector(getIsLoadingPatientMedication);
+    const isLoadingPatientMedicationPrev = usePrevious(isLoadingPatientMedication);
 
     useEffect(() => {
         if (isFocused){
@@ -47,11 +52,55 @@ export default MyPatientDetails = (props) => {
         }
     }, [isFocused])
 
+    useEffect(() => {
+        if (!isLoadingPatientMedication && isLoadingPatientMedication !== isLoadingPatientMedicationPrev && isLoadingPatientMedicationPrev !== undefined){
+            dispatch(startFetchEmr({ jwt, patientId }))
+        }
+    }, [isLoadingPatientMedication, isLoadingPatientMedicationPrev])
+
     const { diets, emr, exercises, medication, supplements } = emrData
     const profileData = profileDetails?.[0]
 
+
+    const onAddItem = (mealType) => {
+        props?.navigation.navigate("DoctorDietSearch", { mealType, edit: medication })
+    }
+
+    const onAddExercise = () => {
+        props?.navigation.navigate("DoctorExerciseSearch", { edit: medication })
+    }
+
+    const onAddSupplements = () => {
+        props?.navigation.navigate("DoctorSupplementsSearch", { edit: medication })
+    }
+
+    const onDelete = (wholeArray, item, type) => {
+        if (type === "supplement_ids") {
+            const filteredArray = wholeArray?.filter((id) => id !== item)
+            let data = {
+                [type]: filteredArray,
+            }
+            dispatch(startPatchPatientMedication({ jwt, data, id: medication?._id }))
+        }
+        else if (type === "exercise_ids") {
+            const filteredArray = wholeArray?.filter((id) => id !== item)
+            let data = {
+                [type]: filteredArray
+            }
+            dispatch(startPatchPatientMedication({ jwt, data, id: medication?._id }))
+        }
+        else {
+            const filteredArray = wholeArray?.filter((meal) => meal?.diet_id !== item?.diet_id)
+            let data = {
+                [type]: filteredArray,
+            }
+
+            dispatch(startPatchPatientMedication({ jwt, data, id: medication?._id }))
+        }
+    }
+
     return (
-        isEmrLoading || isProfileLoading ? <ActivityIndicator/> : <View>
+        isEmrLoading || isProfileLoading || isLoadingPatientMedication ? <ActivityIndicator/> : <View>
             <Button mode="text" icon="chevron-left" onPress={() => props?.navigation?.goBack()} style={{ marginTop: 10, width: '30%', marginHorizontal: 20 }} labelStyle={{ color: "#000" }}>
                 {"GO BACK"}
             </Button>
@@ -85,37 +134,132 @@ export default MyPatientDetails = (props) => {
                         Change
                     </Button>
                 </View>
-                <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginTop: 20 }}>
-                    <Title>{"Diet Plan:"}</Title>
-                    {diets?.map((diet,index)=>{
-                        return(
-                            <Paragraph key={index}>{diet?.name} - {diet?.type?.join(", ")}</Paragraph>
-                        )
-                    })}
+                <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical: 20 }}>
+                    <View style={{ borderBottomColor: '#C3C3C2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500' }}>Breakfast:</Text>
+                            <Button mode="outlined" onPress={() => onAddItem("breakfast")}>
+                                ADD +
+                            </Button>
+                        </View>
+                        {medication?.['breakfast'] ? medication['breakfast']?.map((item, index) => {
+                            const filteredDiet = diets?.filter((diet) => diet?._id === item?.diet_id)
+                            return (
+                                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                    <Text style={{ fontSize: 16 }}>{filteredDiet?.[0]?.name} - {filteredDiet?.[0]?.calories?.measurement}({filteredDiet?.[0]?.calories?.unit_of_measurement})</Text>
+                                    <TouchableOpacity onPress={() => onDelete(medication['breakfast'], item, "breakfast")}>
+                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        }) : null}
+                    </View>
+                    <View style={{ borderBottomColor: '#C3C3C2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500' }}>Lunch:</Text>
+                            <Button mode="outlined" onPress={() => onAddItem("lunch")}>
+                                ADD +
+                            </Button>
+                        </View>
+                        {medication?.['lunch'] ? medication['lunch']?.map((item, index) => {
+                            const filteredDiet = diets?.filter((diet) => diet?._id === item?.diet_id)
+                            return (
+                                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                    <Text style={{ fontSize: 16 }}>{filteredDiet?.[0]?.name} - {filteredDiet?.[0]?.calories?.measurement}({filteredDiet?.[0]?.calories?.unit_of_measurement})</Text>
+                                    <TouchableOpacity onPress={() => onDelete(medication['lunch'], item, "lunch")}>
+                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        }) : null}
+                    </View>
+                    <View style={{ borderBottomColor: '#C3C3C2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500' }}>Snack:</Text>
+                            <Button mode="outlined" onPress={() => onAddItem("snack")}>
+                                ADD +
+                            </Button>
+                        </View>
+                        {medication?.['snack'] ? medication['snack']?.map((item, index) => {
+                            const filteredDiet = diets?.filter((diet) => diet?._id === item?.diet_id)
+                            return (
+                                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                    <Text style={{ fontSize: 16 }}>{filteredDiet?.[0]?.name} - {filteredDiet?.[0]?.calories?.measurement}({filteredDiet?.[0]?.calories?.unit_of_measurement})</Text>
+                                    <TouchableOpacity onPress={() => onDelete(medication['snack'], item, "snack")}>
+                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        }) : null}
+                    </View>
+                    <View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500' }}>Dinner:</Text>
+                            <Button mode="outlined" onPress={() => onAddItem("dinner")}>
+                                ADD +
+                            </Button>
+                        </View>
+                        {medication?.['dinner'] ? medication['dinner']?.map((item, index) => {
+                            const filteredDiet = diets?.filter((diet) => diet?._id === item?.diet_id)
+                            return (
+                                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                    <Text style={{ fontSize: 16 }}>{filteredDiet?.[0]?.name} - {filteredDiet?.[0]?.calories?.measurement}({filteredDiet?.[0]?.calories?.unit_of_measurement})</Text>
+                                    <TouchableOpacity onPress={() => onDelete(medication['dinner'], item, "dinner")}>
+                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        }) : null}
+                    </View>
                 </View>
-                <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginTop: 20 }}>
-                    <Title>{"Supplements:"}</Title>
-                    {supplements?.map((supp,index)=>{
-                        return(
-                            <View key={index}>
-                                <Paragraph>{supp?.category}:</Paragraph>
-                                <Paragraph>{supp?.name} - {supp?.serving?.measurement}({supp?.serving?.unit_of_measurement})</Paragraph>
+                <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical: 20 }}>
+                    <View >
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500' }}>Supplements:</Text>
+                            <Button mode="outlined" onPress={() => onAddSupplements()}>
+                                ADD +
+                            </Button>
+                        </View>
+                        {medication?.supplement_ids && medication?.supplement_ids?.map((item, index) => {
+                            const filteredSupplements = supplements?.filter((sup) => {
+                                return sup?._id === item
+                            })?.[0]
+                            return <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                <Text style={{ fontSize: 16, width: '70%' }}>{filteredSupplements?.name}</Text>
+                                <TouchableOpacity onPress={() => onDelete(medication?.supplement_ids, item, "supplement_ids")}>
+                                    <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                </TouchableOpacity>
                             </View>
-                        )
-                    })}
+                        })}
+                    </View>
+                </View>
+                <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical: 20 }}>
+                    <View >
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                            <Text style={{ fontSize: 16, fontWeight: '500' }}>Exercises:</Text>
+                            <Button mode="outlined" onPress={() => onAddExercise()}>
+                                ADD +
+                            </Button>
+                        </View>
+                        {medication?.exercise_ids ? medication?.exercise_ids?.map((item, index) => {
+                            const filteredExercise = exercises?.filter((ex) => {
+                                return ex?._id === item
+                            })?.[0]
+                            return (
+                                <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                    <Text style={{ fontSize: 16 }}>{filteredExercise?.name} - {item?.duration_in_min}min</Text>
+                                    <TouchableOpacity onPress={() => onDelete(filteredExercise, item, "exercise_ids")}>
+                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
+                        }) : null}
+                    </View>
                 </View>
                 <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginTop: 20 }}>
-                    <Title>{"Excercise :"}</Title>
-                    {exercises?.map((excercise, index) => {
-                        return (
-                            <Paragraph key={index}>{excercise?.name} : {excercise?.calories_burnt?.value + "kcal"} - {excercise?.calories_burnt?.duration_in_min + "mins"}</Paragraph>
-                        )
-                    })}
-                </View>
-                {/* <View style={{ backgroundColor: '#fff', borderRadius: 16, padding: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginTop: 20 }}>
                     <Title>{"Sleep :"}</Title>
-                    <Paragraph>Duration : {self_management?.sleep_in_min}mins</Paragraph>
-                </View> */}
+                    <Paragraph>Duration : {medication?.sleep_in_min}mins</Paragraph>
+                </View>
             </ScrollView>
         </View>
     );

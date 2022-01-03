@@ -62,7 +62,6 @@ export default MedicationSearchScreen = (props) => {
             "emr_id": emrId,
             "notes": "text"
         }
-        console.log(data,"data");
         dispatch(startPostPrescription({jwt,data}))
     }
 
