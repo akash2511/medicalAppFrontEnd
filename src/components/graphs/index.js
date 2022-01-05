@@ -71,6 +71,8 @@ export default PatientGraphs = (props) => {
             ]
         }]
     })
+    const [covidGraphOne, setCovidGraphOne] = useState({})
+    const [covidGraphTwo, setCovidGraphTwo] = useState({})
 
     const screenWidth = Dimensions.get('window').width - 40
 
@@ -138,15 +140,37 @@ export default PatientGraphs = (props) => {
 
     useEffect(() => {
         if (!isCovidGraphLoading && isCovidGraphLoading !== isCovidGraphLoadingPrev && isCovidGraphLoadingPrev !== undefined){
-            console.log(covidGraph,"covidGraph");
-            // const labels = Object.keys(sleepGraph)?.map((key) => moment(key,"YYYY/MM/DD").format("D/MM"))
-            // const values = Object.keys(sleepGraph)?.map((key) => sleepGraph[key]?.sleep_in_min ? sleepGraph[key]?.sleep_in_min : 0)
-            // setSleepData({
-            //     labels: labels,
-            //     datasets: [{
-            //         data: values
-            //     }]
-            // })
+            const graphOne = {}
+            const graphTwo = {}
+            Object.keys(covidGraph)?.forEach((key)=>{
+                graphOne = Object.assign({}, graphOne,{
+                    [key]:{
+                        color:"#000",
+                        communication:covidGraph[key]?.communication,
+                        social_role:covidGraph[key]?.social_role,
+                        mobility:covidGraph[key]?.mobility,
+                        personal_care:covidGraph[key]?.personal_care,
+                        other_activities_of_daily_living:covidGraph[key]?.other_activities_of_daily_living
+                    }
+                })
+                graphTwo = Object.assign({}, graphTwo,{
+                    [key]:{
+                        color:"#000",
+                        cough_throat_sensitivity_voice_change:covidGraph[key]?.cough_throat_sensitivity_voice_change,
+                        breathlessness:covidGraph[key]?.breathlessness,
+                        fatigue:covidGraph[key]?.fatigue,
+                        pain_discomfort:covidGraph[key]?.pain_discomfort,
+                        cognition:covidGraph[key]?.cognition,
+                        anxiety:covidGraph[key]?.anxiety,
+                        depression:covidGraph[key]?.depression,
+                        ptsd_screen:covidGraph[key]?.ptsd_screen,
+                        palpitation:covidGraph[key]?.palpitation,
+                        dizziness:covidGraph[key]?.dizziness
+                    }
+                })
+            })
+            setCovidGraphOne(graphOne)
+            setCovidGraphTwo(graphTwo)
         }
     }, [isCovidGraphLoading, isCovidGraphLoadingPrev])
 
@@ -158,13 +182,6 @@ export default PatientGraphs = (props) => {
         color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     }
     const CaloriesBurntConfig = {
-        backgroundColor: '#e26a00',
-        backgroundGradientFrom: '#46006C',
-        backgroundGradientTo: '#630198',
-        decimalPlaces: 2, // optional, defaults to 2dp
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-    }
-    const barChartConfig = {
         backgroundColor: '#e26a00',
         backgroundGradientFrom: '#46006C',
         backgroundGradientTo: '#630198',
@@ -218,25 +235,6 @@ export default PatientGraphs = (props) => {
                             { x: 4, y: 4, y0: 0 },
                             { x: 5, y: 10, y0: 0 }
                         ]} />
-                    <VictoryArea
-                        style={{
-                            data: {
-                                fill: "#27F03F", fillOpacity: 0.7, stroke: "#c43a31", strokeWidth: 1
-                            },
-                            labels: {
-                                fontSize: 15,
-                                color: "#fff"
-                            },
-                            parent: { border: "1px solid #000" }
-                        }}
-                        data={[
-                            { x: 1, y: 1, y0: 0 },
-                            { x: 2, y: 5, y0: 0 },
-                            { x: 3, y: 3, y0: 0 },
-                            { x: 4, y: 9, y0: 0 },
-                            { x: 5, y: 10, y0: 0 }
-                        ]} />
-                    <VictoryPolarAxis />
                     <VictoryLegend x={20} y={320}
                         title=""
                         centerTitle
