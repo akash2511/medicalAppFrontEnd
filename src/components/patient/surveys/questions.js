@@ -35,13 +35,15 @@ export default PatientQuestionaire = (props) => {
     const isLoadingPutSurveySubmissionsPrev = usePrevious(isLoadingPutSurveySubmissions)
     const isLoadingFetchAllSurveyQuestions = useSelector(getisLoadingFetchAllSurveyQuestions)
     const isLoadingFetchAllSurveyQuestionsPrev = usePrevious(isLoadingFetchAllSurveyQuestions)
-    const allSurveyQuestions = useSelector(getallSurveyQuestions)
+    const allSurveyQuestionsRedux = useSelector(getallSurveyQuestions)
     const isLoadingFetchAllSurveySubmissions = useSelector(getisLoadingFetchAllSurveySubmissions)
     const isLoadingFetchAllSurveySubmissionsPrev = usePrevious(isLoadingFetchAllSurveySubmissions)
     const allSurveySubmissions = useSelector(getallSurveySubmissions)
     const isLoadingGetProfile = useSelector(getIsLoadingGetProfile)
     const isLoadingGetProfilePrev = usePrevious(isLoadingGetProfile)
     const profileDetails = useSelector(getProfileDetails)
+    
+    let allSurveyQuestions = allSurveyQuestionsRedux?.filter((item)=>item?.main)?.sort((a,b)=>a?.order - b?.order)
 
     const onChangeValue = (questionId, answerId, type) => {
         if (type == "SINGLE_CHOICE") {
@@ -261,7 +263,7 @@ export default PatientQuestionaire = (props) => {
     }
 
     const renderSubAnswers = (questionId) => {
-        let question = allSurveyQuestions?.filter(item => item?._id === questionId)?.[0]
+        let question = allSurveyQuestionsRedux?.filter(item => item?._id === questionId)?.[0]
         if (question?.type === "SINGLE_CHOICE"){
             let subQuestion = question?.answers?.filter(item => item?._id == questionAnswers[question?._id]?.[0])?.[0]?.sub_question
             return (
