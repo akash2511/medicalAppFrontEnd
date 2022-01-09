@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from 'react';
-import { ScrollView, View, Text, Image, Dimensions } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { Button, Title, Paragraph, Card, ActivityIndicator } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -11,16 +11,14 @@ import { fetchProfile } from '../../redux/actions/account'
 
 
 import {
-    LineChart,
-    BarChart,
-    ProgressChart,
+    LineChart
 } from 'react-native-chart-kit'
 import {
     VictoryChart,
     VictoryTheme,
     VictoryArea,
-    VictoryPolarAxis,
     VictoryLegend } from "victory-native";
+import { colorCodes } from './assets'
 
 //reducers
 import { getJwt, getIsLoadingGetProfile, getProfileDetails } from '../../redux/reducers/account'
@@ -73,6 +71,7 @@ export default PatientGraphs = (props) => {
     })
     const [covidGraphOne, setCovidGraphOne] = useState({})
     const [covidGraphTwo, setCovidGraphTwo] = useState({})
+    const [tab, setTab] = useState("Covid")
 
     const screenWidth = Dimensions.get('window').width - 40
 
@@ -140,12 +139,12 @@ export default PatientGraphs = (props) => {
 
     useEffect(() => {
         if (!isCovidGraphLoading && isCovidGraphLoading !== isCovidGraphLoadingPrev && isCovidGraphLoadingPrev !== undefined){
-            const graphOne = {}
-            const graphTwo = {}
-            Object.keys(covidGraph)?.forEach((key)=>{
+            let graphOne = {}
+            let graphTwo = {}
+            Object.keys(covidGraph)?.forEach((key, index)=>{
                 graphOne = Object.assign({}, graphOne,{
                     [key]:{
-                        color:"#000",
+                        color: colorCodes[index%7],
                         communication:covidGraph[key]?.communication,
                         social_role:covidGraph[key]?.social_role,
                         mobility:covidGraph[key]?.mobility,
@@ -155,7 +154,7 @@ export default PatientGraphs = (props) => {
                 })
                 graphTwo = Object.assign({}, graphTwo,{
                     [key]:{
-                        color:"#000",
+                        color: colorCodes[index % 7],
                         cough_throat_sensitivity_voice_change:covidGraph[key]?.cough_throat_sensitivity_voice_change,
                         breathlessness:covidGraph[key]?.breathlessness,
                         fatigue:covidGraph[key]?.fatigue,
@@ -173,8 +172,6 @@ export default PatientGraphs = (props) => {
             setCovidGraphTwo(graphTwo)
         }
     }, [isCovidGraphLoading, isCovidGraphLoadingPrev])
-
-    console.log(covidGraphOne,"covidGraphOne");
 
     const CaloriesIntakeConfig = {
         backgroundColor: '#e26a00',
@@ -203,92 +200,224 @@ export default PatientGraphs = (props) => {
             <Button mode="text" icon="chevron-left" onPress={() => props?.navigation?.goBack()} style={{ marginTop: 10, marginHorizontal: 20 }} labelStyle={{ color: "#000" }}>
                 {"GO BACK"}
             </Button>
-            <Title style={{marginBottom:10}}>Covid Graph</Title>
-            <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
-                <VictoryChart polar
-                    theme={VictoryTheme.material}
-                    animate={{
-                        duration: 600,
-                        onLoad: { duration: 300 }
-                    }}
-                    style={{
-                        parent: {
-                            border: "1px solid #ccc",
-                            marginLeft:-20,
-                            color:"#fff"
-                        }
-                    }}
-                >
-                    <VictoryArea
-                        style={{
-                            data: {
-                                fill: "#c43a31", fillOpacity: 0.7, stroke: "#c43a31", strokeWidth: 1
-                            },
-                            labels: {
-                                fontSize: 15,
-                                color:"#fff"
-                            },
-                            parent: { border: "1px solid #000" }
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 20 }}>
+                <TouchableOpacity style={tab === "Covid" ? styles.filterButtonSelected : styles.filterButton} onPress={() => setTab("Covid")}>
+                    <Text style={{ fontWeight: "400", color: tab === "Covid" ? "#fff" : "#79829e", marginHorizontal: 16, marginVertical: 6 }} >
+                        Covid
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={tab === "Calories" ? [styles.filterButtonSelected, { marginLeft: 10 }] : [styles.filterButton, { marginLeft: 10 }]} onPress={() => setTab("Calories")}>
+                    <Text style={{ fontWeight: "400", color: tab === "Calories" ? "#fff" : "#79829e", marginHorizontal: 16, marginVertical: 6 }} >
+                        Calories
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={tab === "Sleep" ? [styles.filterButtonSelected, { marginLeft: 10 }] : [styles.filterButton, { marginLeft: 10 }]} onPress={() => setTab("Sleep")}>
+                    <Text style={{ fontWeight: "400", color: tab === "Sleep" ? "#fff" : "#79829e", marginHorizontal: 16, marginVertical: 6 }} >
+                        Sleep
+                    </Text>
+                </TouchableOpacity>
+            </View>
+            {tab === "Covid" ? <View>
+                <Title style={{marginBottom:10}}>Functional Disability Score:</Title>
+                <Paragraph style={{ marginTop: 10 }}>com - communication</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>mob - mobility</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>other - other activities</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>personal - personal care</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>social - social role</Paragraph>
+                <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
+                    <VictoryChart polar
+                        theme={VictoryTheme.material}
+                        animate={{
+                            duration: 600,
+                            onLoad: { duration: 300 }
                         }}
-                        data={[
-                            { x: 1, y: 5, y0: 0 },
-                            { x: 2, y: 3, y0: 0 },
-                            { x: 3, y: 10, y0: 0 },
-                            { x: 4, y: 4, y0: 0 },
-                            { x: 5, y: 10, y0: 0 }
-                        ]} />
-                    <VictoryLegend x={20} y={320}
-                        title=""
-                        centerTitle
-                        orientation="horizontal"
-                        gutter={20}
-                        style={{ title: { fontSize: 20 } }}
-                        data={[
-                            { name: "Pre-Covid", symbol: { fill: "#c43a31" } },
-                            { name: "Post-Covid", symbol: { fill: "#27F03F" } }
-                        ]}
-                    />
-                </VictoryChart>
-            </LinearGradient>
-            <Title style={{marginTop:30}}>Calorie In-Take(kcal)</Title>
-            <Paragraph style={{marginTop:10}}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
-            {isLoadingCaloriesIntake ? <ActivityIndicator/> :<LineChart
-                data={caloriesIntakeData}
-                width={screenWidth} // from react-native
-                height={220}
-                chartConfig={CaloriesIntakeConfig}
-                bezier
-                style={{
-                    marginVertical:10,
-                    borderRadius: 16
-                }}
-            />}
-            <Title style={{marginTop:30}}>Calories Burnt(kcal)</Title>
-            <Paragraph style={{ marginTop: 10 }}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
-            {isLoadingCaloriesBurnt ? <ActivityIndicator/> : <LineChart
-                data={caloriesBurntData}
-                width={screenWidth} // from react-native
-                height={220}
-                chartConfig={CaloriesBurntConfig}
-                bezier
-                style={{
-                    marginVertical:10,
-                    borderRadius: 16
-                }}
-            />}
-            <Title style={{ marginTop: 30 }}>Sleep(mins)</Title>
-            <Paragraph style={{ marginTop: 10 }}>x-axis:mins | y-axis:Date(DD/MM)</Paragraph>
-            {isLoadingSleepGraph ? <ActivityIndicator /> : <LineChart
-                data={sleepData}
-                width={screenWidth} // from react-native
-                height={220}
-                chartConfig={sleepChartConfig}
-                bezier
-                style={{
-                    marginVertical: 10,
-                    borderRadius: 16
-                }}
-            />}
+                        style={{
+                            parent: {
+                                border: "1px solid #ccc",
+                                marginLeft:-20,
+                                color:"#fff"
+                            }
+                        }}
+                    >
+                        {Object.keys(covidGraphOne)?.map((key,index)=>{
+                            return(
+                                <VictoryArea
+                                    key={index}
+                                    style={{
+                                        data: {
+                                            fill: covidGraphOne[key]?.color, fillOpacity: 0.5, stroke: "#000", strokeWidth: 0
+                                        },
+                                        labels: {
+                                            fontSize: 2,
+                                            color: "#000"
+                                        },
+                                        parent: { border: "1px solid #000" },
+                                    }}
+                                    categories={{ x: ["com", "mob", "other", "personal","social"] }}
+                                    data={[
+                                        { x: 1, y: covidGraphOne[key]?.communication, y0: 0 },
+                                        { x: 2, y: covidGraphOne[key]?.mobility, y0: 0 },
+                                        { x: 3, y: covidGraphOne[key]?.other_activities_of_daily_living, y0: 0 },
+                                        { x: 4, y: covidGraphOne[key]?.personal_care, y0: 0 },
+                                        { x: 5, y: covidGraphOne[key]?.social_role, y0: 0 }
+                                    ]} />
+                            )
+                        })}
+                        <VictoryLegend x={20} y={320}
+                            title=""
+                            centerTitle
+                            orientation="horizontal"
+                            gutter={20}
+                            style={{ title: { fontSize: 20 } }}
+                            data={Object.keys(covidGraphOne)?.map((key) => {
+                                return {
+                                    name: [key], symbol: { fill: covidGraphOne[key]?.color }
+                                }
+                            })}
+                        />
+                    </VictoryChart>
+                </LinearGradient>
+                <Title style={{marginBottom:10}}>Symptoms Severity Score:</Title>
+                <Paragraph style={{ marginTop: 10 }}>anx - anxiety</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>breath - breathlessness</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>cog - cognition</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>cough - cough throat sensitivity voice change</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>dep - depression</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>diz - dizziness</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>fat - fatigue</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>pain - pain discomfort</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>palp - palpitation</Paragraph>
+                <Paragraph style={{ marginTop: 10 }}>ptsd - ptsd screen</Paragraph>
+                <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
+                    <VictoryChart polar
+                        theme={VictoryTheme.material}
+                        animate={{
+                            duration: 600,
+                            onLoad: { duration: 300 }
+                        }}
+                        style={{
+                            parent: {
+                                border: "1px solid #ccc",
+                                marginLeft:-20,
+                                color:"#fff"
+                            }
+                        }}
+                    >
+                        {Object.keys(covidGraphTwo)?.map((key,index)=>{
+                            return(
+                                <VictoryArea
+                                    key={index}
+                                    style={{
+                                        data: {
+                                            fill: covidGraphTwo[key]?.color, fillOpacity: 0.5, stroke: "#000", strokeWidth: 0
+                                        },
+                                        labels: {
+                                            fontSize: 2,
+                                            color: "#000"
+                                        },
+                                        parent: { border: "1px solid #000" },
+                                    }}
+                                    categories={{ x: ["anx", "breath", "cog", "cough", "dep", "diz", "fat", "pain", "palp","ptsd"] }}
+                                    data={[
+                                        { x: 1, y: covidGraphTwo[key]?.anxiety, y0: 0 },
+                                        { x: 2, y: covidGraphTwo[key]?.breathlessness, y0: 0 },
+                                        { x: 3, y: covidGraphTwo[key]?.cognition, y0: 0 },
+                                        { x: 4, y: covidGraphTwo[key]?.cough_throat_sensitivity_voice_change, y0: 0 },
+                                        { x: 5, y: covidGraphTwo[key]?.depression, y0: 0 },
+                                        { x: 6, y: covidGraphTwo[key]?.dizziness, y0: 0 },
+                                        { x: 7, y: covidGraphTwo[key]?.fatigue, y0: 0 },
+                                        { x: 8, y: covidGraphTwo[key]?.pain_discomfort, y0: 0 },
+                                        { x: 9, y: covidGraphTwo[key]?.palpitation, y0: 0 },
+                                        { x: 10, y: covidGraphTwo[key]?.ptsd_screen, y0: 0 }
+                                    ]} />
+                            )
+                        })}
+                        <VictoryLegend x={20} y={320}
+                            title=""
+                            centerTitle
+                            orientation="horizontal"
+                            gutter={20}
+                            style={{ title: { fontSize: 20 } }}
+                            data={Object.keys(covidGraphTwo)?.map((key) => {
+                                return {
+                                    name: [key], symbol: { fill: covidGraphTwo[key]?.color }
+                                }
+                            })}
+                        />
+                    </VictoryChart>
+                </LinearGradient>
+            </View> : null }
+            {tab === "Calories" ? <View>
+                <Title style={{marginTop:10}}>Calorie In-Take(kcal)</Title>
+                <Paragraph style={{marginTop:10}}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
+                {isLoadingCaloriesIntake ? <ActivityIndicator/> :<LineChart
+                    data={caloriesIntakeData}
+                    width={screenWidth} // from react-native
+                    height={220}
+                    chartConfig={CaloriesIntakeConfig}
+                    bezier
+                    style={{
+                        marginVertical:10,
+                        borderRadius: 16
+                    }}
+                />}
+                <Title style={{marginTop:30}}>Calories Burnt(kcal)</Title>
+                <Paragraph style={{ marginTop: 10 }}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
+                {isLoadingCaloriesBurnt ? <ActivityIndicator/> : <LineChart
+                    data={caloriesBurntData}
+                    width={screenWidth} // from react-native
+                    height={220}
+                    chartConfig={CaloriesBurntConfig}
+                    bezier
+                    style={{
+                        marginVertical:10,
+                        borderRadius: 16
+                    }}
+                />}
+            </View> : null }
+            {tab === "Sleep" ? <View>
+                <Paragraph style={{ marginTop: 10 }}>x-axis:mins | y-axis:Date(DD/MM)</Paragraph>
+                {isLoadingSleepGraph ? <ActivityIndicator /> : <LineChart
+                    data={sleepData}
+                    width={screenWidth} // from react-native
+                    height={220}
+                    chartConfig={sleepChartConfig}
+                    bezier
+                    style={{
+                        marginVertical: 10,
+                        borderRadius: 16
+                    }}
+                />}
+            </View> : null }
         </ScrollView>
     );
+}
+
+const styles = {
+    filterButton: {
+        borderRadius: 18,
+        backgroundColor: "#ecf6ff",
+        borderWidth: 1,
+        borderColor: "#79829e",
+        alignSelf: 'flex-start',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    filterButtonSelected: {
+        borderRadius: 18,
+        backgroundColor: "#3254be",
+        borderWidth: 1,
+        borderColor: "#79829e",
+        shadowColor: "rgba(49, 136, 255, 0.5)",
+        shadowOffset: {
+            width: 0,
+            height: 5
+        },
+        shadowRadius: 10,
+        shadowOpacity: 1,
+        alignSelf: 'flex-start',
+        justifyContent: 'center',
+        alignItems: 'center',
+        elevation: 4
+    }
 }
