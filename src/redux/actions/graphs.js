@@ -41,7 +41,6 @@ export const startFetchCovidGraphData = (data) => {
             const response = await validatedData.json()
             dispatch(emitCovidGraphData(response?.data))
         } catch (err) {
-            console.log(err,"err");
             dispatch(emitCovidGraphFail())
         }
     }

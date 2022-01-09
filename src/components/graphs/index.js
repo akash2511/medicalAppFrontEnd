@@ -101,8 +101,8 @@ export default PatientGraphs = (props) => {
 
     useEffect(() => {
         if (!isLoadingCaloriesBurnt && isLoadingCaloriesBurnt !== isLoadingCaloriesBurntPrev && isLoadingCaloriesBurntPrev !== undefined){
-            const labels = Object.keys(caloriesBurntGraph)?.map((key) => moment(key,"YYYY/MM/DD").format("D/MM"))
-            const values = Object.keys(caloriesBurntGraph)?.map((key) => caloriesBurntGraph[key]?.calories_burnt ? caloriesBurntGraph[key]?.calories_burnt : caloriesBurntGraph[key]?.calories_burnt)
+            const labels = Object.keys(caloriesBurntGraph)?.slice(0, 7)?.map((key) => moment(key,"YYYY/MM/DD").format("D/MM"))
+            const values = Object.keys(caloriesBurntGraph)?.slice(0, 7)?.map((key) => caloriesBurntGraph[key]?.calories_burnt ? caloriesBurntGraph[key]?.calories_burnt : caloriesBurntGraph[key]?.calories_burnt)
             setCaloriesBurntData({
                 labels: labels,
                 datasets: [{
@@ -114,8 +114,8 @@ export default PatientGraphs = (props) => {
 
     useEffect(() => {
         if (!isLoadingCaloriesIntake && isLoadingCaloriesIntake !== isLoadingCaloriesIntakePrev && isLoadingCaloriesIntakePrev !== undefined){
-            const labels = Object.keys(caloriesIntakeGraph)?.map((key) => moment(key,"YYYY/MM/DD").format("D/MM"))
-            const values = Object.keys(caloriesIntakeGraph)?.map((key) => caloriesIntakeGraph[key]?.calories_intake ? caloriesIntakeGraph[key]?.calories_intake : 0)
+            const labels = Object.keys(caloriesIntakeGraph)?.slice(0, 7)?.map((key) => moment(key,"YYYY/MM/DD").format("D/MM"))
+            const values = Object.keys(caloriesIntakeGraph)?.slice(0, 7)?.map((key) => caloriesIntakeGraph[key]?.calories_intake ? caloriesIntakeGraph[key]?.calories_intake : 0)
             setCaloriesIntakeData({
                 labels: labels,
                 datasets: [{
@@ -127,8 +127,8 @@ export default PatientGraphs = (props) => {
 
     useEffect(() => {
         if (!isLoadingSleepGraph && isLoadingSleepGraph !== isLoadingSleepGraphPrev && isLoadingSleepGraphPrev !== undefined){
-            const labels = Object.keys(sleepGraph)?.map((key) => moment(key,"YYYY/MM/DD").format("D/MM"))
-            const values = Object.keys(sleepGraph)?.map((key) => sleepGraph[key]?.sleep_in_min ? sleepGraph[key]?.sleep_in_min : 0)
+            const labels = Object.keys(sleepGraph)?.slice(0, 7)?.map((key) => moment(key,"YYYY/MM/DD").format("D/MM"))
+            const values = Object.keys(sleepGraph)?.slice(0, 7)?.map((key) => sleepGraph[key]?.sleep_in_min ? sleepGraph[key]?.sleep_in_min : 0)
             setSleepData({
                 labels: labels,
                 datasets: [{
@@ -173,6 +173,8 @@ export default PatientGraphs = (props) => {
             setCovidGraphTwo(graphTwo)
         }
     }, [isCovidGraphLoading, isCovidGraphLoadingPrev])
+
+    console.log(covidGraphOne,"covidGraphOne");
 
     const CaloriesIntakeConfig = {
         backgroundColor: '#e26a00',
@@ -249,6 +251,7 @@ export default PatientGraphs = (props) => {
                 </VictoryChart>
             </LinearGradient>
             <Title style={{marginTop:30}}>Calorie In-Take(kcal)</Title>
+            <Paragraph style={{marginTop:10}}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
             {isLoadingCaloriesIntake ? <ActivityIndicator/> :<LineChart
                 data={caloriesIntakeData}
                 width={screenWidth} // from react-native
@@ -261,6 +264,7 @@ export default PatientGraphs = (props) => {
                 }}
             />}
             <Title style={{marginTop:30}}>Calories Burnt(kcal)</Title>
+            <Paragraph style={{ marginTop: 10 }}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
             {isLoadingCaloriesBurnt ? <ActivityIndicator/> : <LineChart
                 data={caloriesBurntData}
                 width={screenWidth} // from react-native
@@ -273,6 +277,7 @@ export default PatientGraphs = (props) => {
                 }}
             />}
             <Title style={{ marginTop: 30 }}>Sleep(mins)</Title>
+            <Paragraph style={{ marginTop: 10 }}>x-axis:mins | y-axis:Date(DD/MM)</Paragraph>
             {isLoadingSleepGraph ? <ActivityIndicator /> : <LineChart
                 data={sleepData}
                 width={screenWidth} // from react-native
