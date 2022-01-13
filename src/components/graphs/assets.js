@@ -1,3 +1,3 @@
 export const colorCodes = [
-    "#FF5656", "#F1F76F", "#75F76F", "#6FF7F1", "#6F7FF7","#F76FD6"
+    "#FE0000", "#FECC00", "#70D300", "#00D3A3", "#0043D3","#A600D3"
 ]

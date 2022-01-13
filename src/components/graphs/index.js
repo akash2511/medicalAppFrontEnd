@@ -17,7 +17,9 @@ import {
     VictoryChart,
     VictoryTheme,
     VictoryArea,
-    VictoryLegend } from "victory-native";
+    VictoryLegend,
+    VictoryPolarAxis,
+    Area } from "victory-native";
 import { colorCodes } from './assets'
 
 //reducers
@@ -141,30 +143,60 @@ export default PatientGraphs = (props) => {
         if (!isCovidGraphLoading && isCovidGraphLoading !== isCovidGraphLoadingPrev && isCovidGraphLoadingPrev !== undefined){
             let graphOne = {}
             let graphTwo = {}
-            Object.keys(covidGraph)?.forEach((key, index)=>{
+            Object.keys(covidGraph?.["Post-covid"])?.forEach((key, index)=>{
                 graphOne = Object.assign({}, graphOne,{
-                    [key]:{
+                    [key + "-Post-covid"]:{
+                        type:"post",
                         color: colorCodes[index%7],
-                        communication:covidGraph[key]?.communication,
-                        social_role:covidGraph[key]?.social_role,
-                        mobility:covidGraph[key]?.mobility,
-                        personal_care:covidGraph[key]?.personal_care,
-                        other_activities_of_daily_living:covidGraph[key]?.other_activities_of_daily_living
+                        communication:covidGraph?.["Post-covid"]?.[key]?.communication,
+                        social_role:covidGraph?.["Post-covid"]?.[key]?.social_role,
+                        mobility:covidGraph?.["Post-covid"]?.[key]?.mobility,
+                        personal_care:covidGraph?.["Post-covid"]?.[key]?.personal_care,
+                        other_activities_of_daily_living:covidGraph?.["Post-covid"]?.[key]?.other_activities_of_daily_living
                     }
                 })
                 graphTwo = Object.assign({}, graphTwo,{
-                    [key]:{
+                    [key + "-Post-covid"]:{
+                        type: "post",
                         color: colorCodes[index % 7],
-                        cough_throat_sensitivity_voice_change:covidGraph[key]?.cough_throat_sensitivity_voice_change,
-                        breathlessness:covidGraph[key]?.breathlessness,
-                        fatigue:covidGraph[key]?.fatigue,
-                        pain_discomfort:covidGraph[key]?.pain_discomfort,
-                        cognition:covidGraph[key]?.cognition,
-                        anxiety:covidGraph[key]?.anxiety,
-                        depression:covidGraph[key]?.depression,
-                        ptsd_screen:covidGraph[key]?.ptsd_screen,
-                        palpitation:covidGraph[key]?.palpitation,
-                        dizziness:covidGraph[key]?.dizziness
+                        cough_throat_sensitivity_voice_change:covidGraph?.["Post-covid"]?.[key]?.cough_throat_sensitivity_voice_change,
+                        breathlessness:covidGraph?.["Post-covid"]?.[key]?.breathlessness,
+                        fatigue:covidGraph?.["Post-covid"]?.[key]?.fatigue,
+                        pain_discomfort:covidGraph?.["Post-covid"]?.[key]?.pain_discomfort,
+                        cognition:covidGraph?.["Post-covid"]?.[key]?.cognition,
+                        anxiety:covidGraph?.["Post-covid"]?.[key]?.anxiety,
+                        depression:covidGraph?.["Post-covid"]?.[key]?.depression,
+                        ptsd_screen:covidGraph?.["Post-covid"]?.[key]?.ptsd_screen,
+                        palpitation:covidGraph?.["Post-covid"]?.[key]?.palpitation,
+                        dizziness:covidGraph?.["Post-covid"]?.[key]?.dizziness
+                    }
+                })
+            })
+            Object.keys(covidGraph?.["Pre-covid"])?.forEach((key, index)=>{
+                graphOne = Object.assign({}, graphOne,{
+                    [key + "-Pre-covid"]:{
+                        color: colorCodes[(index+1)%7],
+                        communication:covidGraph?.["Pre-covid"]?.[key]?.communication,
+                        social_role:covidGraph?.["Pre-covid"]?.[key]?.social_role,
+                        mobility:covidGraph?.["Pre-covid"]?.[key]?.mobility,
+                        personal_care:covidGraph?.["Pre-covid"]?.[key]?.personal_care,
+                        other_activities_of_daily_living:covidGraph?.["Pre-covid"]?.[key]?.other_activities_of_daily_living
+                    }
+                })
+                graphTwo = Object.assign({}, graphTwo,{
+                    [key + "-Pre-covid"]:{
+                        type: "pre",
+                        color: colorCodes[(index + 1) % 7],
+                        cough_throat_sensitivity_voice_change:covidGraph?.["Pre-covid"]?.[key]?.cough_throat_sensitivity_voice_change,
+                        breathlessness:covidGraph?.["Pre-covid"]?.[key]?.breathlessness,
+                        fatigue:covidGraph?.["Pre-covid"]?.[key]?.fatigue,
+                        pain_discomfort:covidGraph?.["Pre-covid"]?.[key]?.pain_discomfort,
+                        cognition:covidGraph?.["Pre-covid"]?.[key]?.cognition,
+                        anxiety:covidGraph?.["Pre-covid"]?.[key]?.anxiety,
+                        depression:covidGraph?.["Pre-covid"]?.[key]?.depression,
+                        ptsd_screen:covidGraph?.["Pre-covid"]?.[key]?.ptsd_screen,
+                        palpitation:covidGraph?.["Pre-covid"]?.[key]?.palpitation,
+                        dizziness:covidGraph?.["Pre-covid"]?.[key]?.dizziness
                     }
                 })
             })
@@ -217,35 +249,45 @@ export default PatientGraphs = (props) => {
                     </Text>
                 </TouchableOpacity>
             </View>
-            {tab === "Covid" ? <View>
+            {tab === "Covid" ? isCovidGraphLoading ? <ActivityIndicator/> : <View>
                 <Title style={{marginBottom:10}}>Functional Disability Score:</Title>
-                <Paragraph style={{ marginTop: 10 }}>com - communication</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>mob - mobility</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>other - other activities</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>personal - personal care</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>social - social role</Paragraph>
-                <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
+                <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16}}>
                     <VictoryChart polar
                         theme={VictoryTheme.material}
-                        animate={{
-                            duration: 600,
-                            onLoad: { duration: 300 }
-                        }}
+                        height={400}
                         style={{
                             parent: {
                                 border: "1px solid #ccc",
-                                marginLeft:-20,
-                                color:"#fff"
-                            }
+                                marginLeft:-25,
+                                color:"#fff",
+                            },
                         }}
+                        
                     >
+                        <VictoryPolarAxis
+                            width={400}
+                            height={400}
+                            standalone={false}
+                            labelPlacement="perpendicular"
+                            style={{
+                                grid: { stroke: "black" },
+                                tickLabels: { fontSize: 15, padding: 15 }
+                            }}
+                        />
+                        <VictoryPolarAxis dependentAxis
+                            width={400}
+                            height={400}
+                            domain={[0, 10]}
+                            standalone={false}
+                            axisAngle={180}
+                        />
                         {Object.keys(covidGraphOne)?.map((key,index)=>{
                             return(
                                 <VictoryArea
                                     key={index}
                                     style={{
                                         data: {
-                                            fill: covidGraphOne[key]?.color, fillOpacity: 0.5, stroke: "#000", strokeWidth: 0
+                                            fill: covidGraphOne[key]?.color, fillOpacity: 0.5, stroke: "#626262", strokeWidth: 0.8
                                         },
                                         labels: {
                                             fontSize: 2,
@@ -253,9 +295,9 @@ export default PatientGraphs = (props) => {
                                         },
                                         parent: { border: "1px solid #000" },
                                     }}
-                                    categories={{ x: ["com", "mob", "other", "personal","social"] }}
+                                    categories={{ x: ["communication", "mobility", "other activities", "personal care","social role"] }}
                                     data={[
-                                        { x: 1, y: covidGraphOne[key]?.communication, y0: 0 },
+                                        { x: 1, y: covidGraphOne[key]?.communication, y0: 10 },
                                         { x: 2, y: covidGraphOne[key]?.mobility, y0: 0 },
                                         { x: 3, y: covidGraphOne[key]?.other_activities_of_daily_living, y0: 0 },
                                         { x: 4, y: covidGraphOne[key]?.personal_care, y0: 0 },
@@ -263,7 +305,7 @@ export default PatientGraphs = (props) => {
                                     ]} />
                             )
                         })}
-                        <VictoryLegend x={20} y={320}
+                        <VictoryLegend x={30} y={370}
                             title=""
                             centerTitle
                             orientation="horizontal"
@@ -277,24 +319,11 @@ export default PatientGraphs = (props) => {
                         />
                     </VictoryChart>
                 </LinearGradient>
-                <Title style={{marginBottom:10}}>Symptoms Severity Score:</Title>
-                <Paragraph style={{ marginTop: 10 }}>anx - anxiety</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>breath - breathlessness</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>cog - cognition</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>cough - cough throat sensitivity voice change</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>dep - depression</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>diz - dizziness</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>fat - fatigue</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>pain - pain discomfort</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>palp - palpitation</Paragraph>
-                <Paragraph style={{ marginTop: 10 }}>ptsd - ptsd screen</Paragraph>
+                <Title style={{marginBottom:10, marginTop:30}}>Symptoms Severity Score:</Title>
                 <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
                     <VictoryChart polar
                         theme={VictoryTheme.material}
-                        animate={{
-                            duration: 600,
-                            onLoad: { duration: 300 }
-                        }}
+                        height={400}
                         style={{
                             parent: {
                                 border: "1px solid #ccc",
@@ -303,13 +332,30 @@ export default PatientGraphs = (props) => {
                             }
                         }}
                     >
+                        <VictoryPolarAxis
+                            width={400}
+                            height={400}
+                            standalone={false}
+                            labelPlacement="perpendicular"
+                            style={{
+                                grid: { stroke: "black" },
+                                tickLabels: { fontSize: 15, padding: 15 }
+                            }}
+                        />
+                        <VictoryPolarAxis dependentAxis
+                            width={400}
+                            height={400}
+                            domain={[0, 10]}
+                            axisAngle={180}
+                            standalone={false}
+                        />
                         {Object.keys(covidGraphTwo)?.map((key,index)=>{
                             return(
                                 <VictoryArea
                                     key={index}
                                     style={{
                                         data: {
-                                            fill: covidGraphTwo[key]?.color, fillOpacity: 0.5, stroke: "#000", strokeWidth: 0
+                                            fill: covidGraphTwo[key]?.color, fillOpacity: 0.5, stroke: "#626262", strokeWidth: 0.8
                                         },
                                         labels: {
                                             fontSize: 2,
@@ -317,9 +363,9 @@ export default PatientGraphs = (props) => {
                                         },
                                         parent: { border: "1px solid #000" },
                                     }}
-                                    categories={{ x: ["anx", "breath", "cog", "cough", "dep", "diz", "fat", "pain", "palp","ptsd"] }}
+                                    categories={{ x: ["anxiety", "breathlessness", "cognition", "cough", "depression", "dizziness", "fatigue", "pain", "palpitation","ptsd"] }}
                                     data={[
-                                        { x: 1, y: covidGraphTwo[key]?.anxiety, y0: 0 },
+                                        { x: 1, y: covidGraphTwo[key]?.anxiety, y0: 10 },
                                         { x: 2, y: covidGraphTwo[key]?.breathlessness, y0: 0 },
                                         { x: 3, y: covidGraphTwo[key]?.cognition, y0: 0 },
                                         { x: 4, y: covidGraphTwo[key]?.cough_throat_sensitivity_voice_change, y0: 0 },
@@ -332,7 +378,7 @@ export default PatientGraphs = (props) => {
                                     ]} />
                             )
                         })}
-                        <VictoryLegend x={20} y={320}
+                        <VictoryLegend x={30} y={370}
                             title=""
                             centerTitle
                             orientation="horizontal"
