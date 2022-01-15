@@ -82,7 +82,7 @@ export default MyPatientDetails = (props) => {
             }
             dispatch(startPatchPatientMedication({ jwt, data, id: medication?._id }))
         }
-        else if (type === "exercise_ids") {
+        else if (type === "exercises") {
             const filteredArray = wholeArray?.filter((id) => id !== item)
             let data = {
                 [type]: filteredArray
@@ -241,14 +241,14 @@ export default MyPatientDetails = (props) => {
                                 ADD +
                             </Button>
                         </View>
-                        {medication?.exercise_ids ? medication?.exercise_ids?.map((item, index) => {
+                        {medication?.exercises ? medication?.exercises?.map((item, index) => {
                             const filteredExercise = exercises?.filter((ex) => {
                                 return ex?._id === item
                             })?.[0]
                             return (
                                 <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
-                                    <Text style={{ fontSize: 16 }}>{filteredExercise?.name} - {item?.duration_in_min}min</Text>
-                                    <TouchableOpacity onPress={() => onDelete(filteredExercise, item, "exercise_ids")}>
+                                    <Text style={{ fontSize: 16 }}>{filteredExercise?.name} - {filteredExercise?.calories_burnt?.duration_in_min}min</Text>
+                                    <TouchableOpacity onPress={() => onDelete(medication?.exercises, item, "exercises")}>
                                         <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
                                     </TouchableOpacity>
                                 </View>

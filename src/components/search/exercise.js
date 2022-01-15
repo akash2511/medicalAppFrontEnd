@@ -78,7 +78,7 @@ export default ExerciseSearchScreen = (props) => {
     const onAddItem = (item) => {
         if (level === "doctor") {
             let data = {
-                "exercise_ids": edit?.exercise_ids ? edit?.exercise_ids?.concat([item?._id]) : [item?._id]
+                "exercises": edit?.exercise_ids ? edit?.exercise_ids?.concat([item?._id]) : [item?._id]
             }
             dispatch(startPatchPatientMedication({ jwt, data, id: edit?._id }))
         }

@@ -185,14 +185,9 @@ export default PatientDashboard = (props) => {
     }
 
     return (
-        isLoadingGetProfile || isLoadingPatientMeal || isLoadingPatientSelfManagement || isDietLoading || isExerciseLoading || isSupplementsLoading ? <ActivityIndicator /> : showQuestionaire ? <PatientQuestionaire profileDetails={profileDetails}/> : <View>
+        showQuestionaire ? <PatientQuestionaire profileDetails={profileDetails}/> : <View>
             <ScrollView 
                 ref={ScrollViewRef}
-
-                // We don't need `onContentSizeChanged`
-                // this onScroll fetches data  when scroll reaches top
-                // then it scrolls to last position as you asked
-
                 onScroll={({ nativeEvent }) => {
                     setScrollY(nativeEvent?.contentOffset?.y)
                 }}
@@ -216,158 +211,160 @@ export default PatientDashboard = (props) => {
                         </Text>
                     </TouchableOpacity>
                 </View>
-                {tab ==="Diet" ? <View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
-                        <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', borderRightColor: '#C3C3C2', borderRightWidth: 1, width: '48%' }}>
-                            <Text style={{ fontSize: 15, marginBottom: 10, marginTop:5 }}>Calories Intake</Text>
-                            <Text style={{ fontSize: 20, fontWeight: '700', marginTop:8 }}>{getCaloriesIntake()} kcal</Text>
-                        </View>
-                        <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '48%' }}>
-                            <Text style={{ fontSize: 15, marginBottom: 10, marginTop: 5 }}>Hydration</Text>
-                            <NumericInput
-                                onChange={value => onChangeHidration(value)}
-                                minValue={0}
-                                rounded
-                                value={patientMeal?.hydartion_in_litres}
-                            />
-                        </View>
-                    </View>
-                    <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical:20 }}>
-                        <View style={{ borderBottomColor: '#C3C3C2', borderBottomWidth: 1, marginBottom:20, paddingBottom:10}}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems:'baseline'}}>
-                                <Text style={{ fontSize: 16, fontWeight: '500' }}>Breakfast:</Text>
-                                <Button mode="outlined" onPress={() => onAddItem("breakfast")}>
-                                    ADD +
-                                </Button>
+                {isLoadingGetProfile || isLoadingPatientMeal || isLoadingPatientSelfManagement || isDietLoading || isExerciseLoading || isSupplementsLoading ? <ActivityIndicator /> : <View>
+                    {tab === "Diet" ? <View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                            <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', borderRightColor: '#C3C3C2', borderRightWidth: 1, width: '48%' }}>
+                                <Text style={{ fontSize: 15, marginBottom: 10, marginTop: 5 }}>Calories Intake</Text>
+                                <Text style={{ fontSize: 20, fontWeight: '700', marginTop: 8 }}>{getCaloriesIntake()} kcal</Text>
                             </View>
-                            {patientMeal?.['breakfast'] ? patientMeal['breakfast']?.map((item, index) => {
-                                return (
-                                    <View key={index} style={{flexDirection:'row', justifyContent:'space-between', alignItems:'baseline', marginVertical:10}}>
-                                        <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
-                                        <TouchableOpacity onPress={() => onDelete(patientMeal['breakfast'], item,"breakfast")}>
-                                            <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )
-                            }) : null}
-                        </View>
-                        <View style={{ borderBottomColor: '#C3C3C2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                <Text style={{ fontSize: 16, fontWeight: '500' }}>Lunch:</Text>
-                                <Button mode="outlined" onPress={() => onAddItem("lunch")}>
-                                    ADD +
-                                </Button>
+                            <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '48%' }}>
+                                <Text style={{ fontSize: 15, marginBottom: 10, marginTop: 5 }}>Hydration</Text>
+                                <NumericInput
+                                    onChange={value => onChangeHidration(value)}
+                                    minValue={0}
+                                    rounded
+                                    value={patientMeal?.hydartion_in_litres}
+                                />
                             </View>
-                            {patientMeal?.['lunch'] ? patientMeal['lunch']?.map((item, index) => {
-                                return (
-                                    <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
-                                        <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
-                                        <TouchableOpacity onPress={() => onDelete(patientMeal['lunch'], item, "lunch")}>
-                                            <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )
-                            }) : null}
                         </View>
-                        <View style={{ borderBottomColor: '#C3C3C2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                <Text style={{ fontSize: 16, fontWeight: '500' }}>Snack:</Text>
-                                <Button mode="outlined" onPress={() => onAddItem("snack")}>
-                                    ADD +
-                                </Button>
-                            </View>
-                            {patientMeal?.['snack'] ? patientMeal['snack']?.map((item, index) => {
-                                return (
-                                    <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
-                                        <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
-                                        <TouchableOpacity onPress={() => onDelete(patientMeal['snack'], item, "snack")}>
-                                            <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )
-                            }) : null}
-                        </View>
-                        <View>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                <Text style={{ fontSize: 16, fontWeight: '500' }}>Dinner:</Text>
-                                <Button mode="outlined" onPress={() => onAddItem("dinner")}>
-                                    ADD +
-                                </Button>
-                            </View>
-                            {patientMeal?.['dinner'] ? patientMeal['dinner']?.map((item, index) => {
-                                return (
-                                    <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
-                                        <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
-                                        <TouchableOpacity onPress={() => onDelete(patientMeal['dinner'], item, "dinner")}>
-                                            <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )
-                            }) : null}
-                        </View>
-                    </View>
-                </View>: null}
-                {tab === "Supplements" ?<View>
-                    <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginBottom: 20 }}>
-                        <View >
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                                <Text style={{ fontSize: 16, fontWeight: '500' }}>Supplements:</Text>
-                                <Button mode="outlined" onPress={() => onAddSupplements()}>
-                                    ADD +
-                                </Button>
-                            </View>
-                            {patientMeal?.supplements && patientMeal?.supplements?.map((item, index)=>{
-                                const filteredSupplements = supplements?.filter((sup) => {
-                                    return sup?._id === item
-                                })?.[0]
-                                return <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
-                                    <Text style={{ fontSize: 16, width:'70%' }}>{filteredSupplements?.name}</Text>
-                                    <TouchableOpacity onPress={() => onDelete(patientMeal?.supplements, item, "supplements")}>
-                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
-                                    </TouchableOpacity>
+                        <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical: 20 }}>
+                            <View style={{ borderBottomColor: '#C3C3C2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <Text style={{ fontSize: 16, fontWeight: '500' }}>Breakfast:</Text>
+                                    <Button mode="outlined" onPress={() => onAddItem("breakfast")}>
+                                        ADD +
+                                    </Button>
                                 </View>
-                            })}
-                        </View>
-                    </View>
-                </View>: null}
-                {tab === "SelfManagement" ?<View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
-                        <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', borderRightColor: '#C3C3C2', borderRightWidth: 1, width: '48%' }}>
-                            <Text style={{ fontSize: 15, marginBottom: 10, marginTop: 5 }}>Calories Burnt</Text>
-                            <Text style={{ fontSize: 20, fontWeight: '700', marginTop: 8 }}>{getCaloriesBurnt()} kcal</Text>
-                        </View>
-                        <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '48%' }}>
-                            <Text style={{ fontSize: 15, marginBottom: 10, marginTop: 5 }}>Sleep (hrs)</Text>
-                            <NumericInput
-                                onChange={value => onChangeSleep(value)}
-                                minValue={0}
-                                rounded
-                                step={1}
-                                value={patientSelfManagement?.sleep_in_min ? patientSelfManagement?.sleep_in_min/60 : 0}
-                            />
-                        </View>
-                    </View>
-                    <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical:20 }}>
-                        <View >
-                            <View style={{flexDirection:'row', justifyContent:'space-between', alignItems:'baseline'}}>
-                                <Text style={{ fontSize: 16, fontWeight: '500' }}>Exercises:</Text>
-                                <Button mode="outlined" onPress={() => onAddExercise()}>
-                                    ADD +
-                                </Button>
+                                {patientMeal?.['breakfast'] ? patientMeal['breakfast']?.map((item, index) => {
+                                    return (
+                                        <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                            <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                            <TouchableOpacity onPress={() => onDelete(patientMeal['breakfast'], item, "breakfast")}>
+                                                <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                }) : null}
                             </View>
-                            {patientSelfManagement?.exercise ? patientSelfManagement?.exercise?.map((item, index) => {
-                                return (
-                                    <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
-                                    <Text style={{ fontSize: 16 }}>{exerciseById[item?.id]?.[0]?.name} - {item?.duration_in_min}min</Text>
-                                        <TouchableOpacity onPress={() => onDelete(patientSelfManagement?.exercise, item, "exercise")}>
-                                        <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
-                                    </TouchableOpacity>
+                            <View style={{ borderBottomColor: '#C3C3C2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <Text style={{ fontSize: 16, fontWeight: '500' }}>Lunch:</Text>
+                                    <Button mode="outlined" onPress={() => onAddItem("lunch")}>
+                                        ADD +
+                                    </Button>
                                 </View>
-                                )
-                            }) : null}
+                                {patientMeal?.['lunch'] ? patientMeal['lunch']?.map((item, index) => {
+                                    return (
+                                        <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                            <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                            <TouchableOpacity onPress={() => onDelete(patientMeal['lunch'], item, "lunch")}>
+                                                <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                }) : null}
+                            </View>
+                            <View style={{ borderBottomColor: '#C3C3C2', borderBottomWidth: 1, marginBottom: 20, paddingBottom: 10 }}>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <Text style={{ fontSize: 16, fontWeight: '500' }}>Snack:</Text>
+                                    <Button mode="outlined" onPress={() => onAddItem("snack")}>
+                                        ADD +
+                                    </Button>
+                                </View>
+                                {patientMeal?.['snack'] ? patientMeal['snack']?.map((item, index) => {
+                                    return (
+                                        <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                            <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                            <TouchableOpacity onPress={() => onDelete(patientMeal['snack'], item, "snack")}>
+                                                <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                }) : null}
+                            </View>
+                            <View>
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <Text style={{ fontSize: 16, fontWeight: '500' }}>Dinner:</Text>
+                                    <Button mode="outlined" onPress={() => onAddItem("dinner")}>
+                                        ADD +
+                                    </Button>
+                                </View>
+                                {patientMeal?.['dinner'] ? patientMeal['dinner']?.map((item, index) => {
+                                    return (
+                                        <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                            <Text style={{ fontSize: 16 }}>{dietById[item?.id]?.[0]?.name} - {dietById[item?.id]?.[0]?.calories?.measurement}({dietById[item?.id]?.[0]?.calories?.unit_of_measurement})</Text>
+                                            <TouchableOpacity onPress={() => onDelete(patientMeal['dinner'], item, "dinner")}>
+                                                <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                }) : null}
+                            </View>
                         </View>
-                    </View>
-                </View>:null}
+                    </View> : null}
+                    {tab === "Supplements" ? <View>
+                        <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginBottom: 20 }}>
+                            <View >
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <Text style={{ fontSize: 16, fontWeight: '500' }}>Supplements:</Text>
+                                    <Button mode="outlined" onPress={() => onAddSupplements()}>
+                                        ADD +
+                                    </Button>
+                                </View>
+                                {patientMeal?.supplements && patientMeal?.supplements?.map((item, index) => {
+                                    const filteredSupplements = supplements?.filter((sup) => {
+                                        return sup?._id === item
+                                    })?.[0]
+                                    return <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                        <Text style={{ fontSize: 16, width: '70%' }}>{filteredSupplements?.name}</Text>
+                                        <TouchableOpacity onPress={() => onDelete(patientMeal?.supplements, item, "supplements")}>
+                                            <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                })}
+                            </View>
+                        </View>
+                    </View> : null}
+                    {tab === "SelfManagement" ? <View>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
+                            <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', borderRightColor: '#C3C3C2', borderRightWidth: 1, width: '48%' }}>
+                                <Text style={{ fontSize: 15, marginBottom: 10, marginTop: 5 }}>Calories Burnt</Text>
+                                <Text style={{ fontSize: 20, fontWeight: '700', marginTop: 8 }}>{getCaloriesBurnt()} kcal</Text>
+                            </View>
+                            <View style={{ flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '48%' }}>
+                                <Text style={{ fontSize: 15, marginBottom: 10, marginTop: 5 }}>Sleep (hrs)</Text>
+                                <NumericInput
+                                    onChange={value => onChangeSleep(value)}
+                                    minValue={0}
+                                    rounded
+                                    step={1}
+                                    value={patientSelfManagement?.sleep_in_min ? patientSelfManagement?.sleep_in_min / 60 : 0}
+                                />
+                            </View>
+                        </View>
+                        <View style={{ backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25, marginVertical: 20 }}>
+                            <View >
+                                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                                    <Text style={{ fontSize: 16, fontWeight: '500' }}>Exercises:</Text>
+                                    <Button mode="outlined" onPress={() => onAddExercise()}>
+                                        ADD +
+                                    </Button>
+                                </View>
+                                {patientSelfManagement?.exercise ? patientSelfManagement?.exercise?.map((item, index) => {
+                                    return (
+                                        <View key={index} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginVertical: 10 }}>
+                                            <Text style={{ fontSize: 16 }}>{exerciseById[item?.id]?.[0]?.name} - {item?.duration_in_min}min</Text>
+                                            <TouchableOpacity onPress={() => onDelete(patientSelfManagement?.exercise, item, "exercise")}>
+                                                <Text style={{ fontSize: 16, color: Colors.red500 }}>DELETE</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )
+                                }) : null}
+                            </View>
+                        </View>
+                    </View> : null}
+                </View>}
             </ScrollView>
         </View>
     );
