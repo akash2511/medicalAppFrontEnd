@@ -45,5 +45,5 @@
     "redux-devtools": "^3.7.0"
   },
   "private": true,
-  "version": "0.0.7"
+  "version": "0.0.8"
 }
