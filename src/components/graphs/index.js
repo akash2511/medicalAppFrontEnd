@@ -226,13 +226,20 @@ export default PatientGraphs = (props) => {
         decimalPlaces: 2, // optional, defaults to 2dp
         color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
     }
+    const inflamationChartConfig = {
+        backgroundColor: '#27820C',
+        backgroundGradientFrom: '#FF5100',
+        backgroundGradientTo: '#FA7334',
+        decimalPlaces: 2, // optional, defaults to 2dp
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    }
 
     return (
-        <ScrollView contentContainerStyle={{marginTop: 10, marginHorizontal: 20, paddingBottom:300 }}>
+        <View> 
             <Button mode="text" icon="chevron-left" onPress={() => props?.navigation?.goBack()} style={{ marginTop: 10, marginHorizontal: 20 }} labelStyle={{ color: "#000" }}>
                 {"GO BACK"}
             </Button>
-            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 20 }}>
+            <ScrollView horizontal contentContainerStyle={{ height:50, marginLeft:20, paddingRight:40 }} showsHorizontalScrollIndicator={false}>
                 <TouchableOpacity style={tab === "Covid" ? styles.filterButtonSelected : styles.filterButton} onPress={() => setTab("Covid")}>
                     <Text style={{ fontWeight: "400", color: tab === "Covid" ? "#fff" : "#79829e", marginHorizontal: 16, marginVertical: 6 }} >
                         Covid
@@ -248,194 +255,232 @@ export default PatientGraphs = (props) => {
                         Sleep
                     </Text>
                 </TouchableOpacity>
-            </View>
-            {tab === "Covid" ? isCovidGraphLoading ? <ActivityIndicator/> : <View>
-                <Title style={{marginBottom:10}}>Functional Disability Score:</Title>
-                <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16}}>
-                    <VictoryChart polar
-                        theme={VictoryTheme.material}
-                        height={400}
-                        style={{
-                            parent: {
-                                border: "1px solid #ccc",
-                                marginLeft:-25,
-                                color:"#fff",
-                            },
-                        }}
-                        
-                    >
-                        <VictoryPolarAxis
-                            width={400}
+                <TouchableOpacity style={tab === "Inflamation" ? [styles.filterButtonSelected, { marginLeft: 10 }] : [styles.filterButton, { marginLeft: 10 }]} onPress={() => setTab("Inflamation")}>
+                    <Text style={{ fontWeight: "400", color: tab === "Inflamation" ? "#fff" : "#79829e", marginHorizontal: 16, marginVertical: 6 }} >
+                        Inflamation
+                    </Text>
+                </TouchableOpacity>
+            </ScrollView>
+            <ScrollView contentContainerStyle={{marginTop: 10, marginHorizontal: 20, paddingBottom:300 }}>
+                {tab === "Covid" ? isCovidGraphLoading ? <ActivityIndicator/> : <View>
+                    <Title style={{marginBottom:10, marginTop:10}}>Functional Disability Score:</Title>
+                    <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16}}>
+                        <VictoryChart polar
+                            theme={VictoryTheme.material}
                             height={400}
-                            standalone={false}
-                            labelPlacement="perpendicular"
                             style={{
-                                grid: { stroke: "black" },
-                                tickLabels: { fontSize: 15, padding: 15 }
+                                parent: {
+                                    border: "1px solid #ccc",
+                                    marginLeft:-25,
+                                    color:"#fff",
+                                },
                             }}
-                        />
-                        <VictoryPolarAxis dependentAxis
-                            width={400}
-                            height={400}
-                            domain={[0, 10]}
-                            standalone={false}
-                            axisAngle={180}
-                        />
-                        {Object.keys(covidGraphOne)?.map((key,index)=>{
-                            return(
-                                <VictoryArea
-                                    key={index}
-                                    style={{
-                                        data: {
-                                            fill: covidGraphOne[key]?.color, fillOpacity: 0.5, stroke: "#626262", strokeWidth: 0.8
-                                        },
-                                        labels: {
-                                            fontSize: 2,
-                                            color: "#000"
-                                        },
-                                        parent: { border: "1px solid #000" },
-                                    }}
-                                    categories={{ x: ["communication", "mobility", "other activities", "personal care","social role"] }}
-                                    data={[
-                                        { x: 1, y: covidGraphOne[key]?.communication, y0: 10 },
-                                        { x: 2, y: covidGraphOne[key]?.mobility, y0: 0 },
-                                        { x: 3, y: covidGraphOne[key]?.other_activities_of_daily_living, y0: 0 },
-                                        { x: 4, y: covidGraphOne[key]?.personal_care, y0: 0 },
-                                        { x: 5, y: covidGraphOne[key]?.social_role, y0: 0 }
-                                    ]} />
-                            )
-                        })}
-                        <VictoryLegend x={30} y={370}
-                            title=""
-                            centerTitle
-                            orientation="horizontal"
-                            gutter={20}
-                            style={{ title: { fontSize: 20 } }}
-                            data={Object.keys(covidGraphOne)?.map((key) => {
-                                return {
-                                    name: [key], symbol: { fill: covidGraphOne[key]?.color }
-                                }
+                            
+                        >
+                            <VictoryPolarAxis
+                                width={400}
+                                height={400}
+                                standalone={false}
+                                labelPlacement="perpendicular"
+                                style={{
+                                    grid: { stroke: "black" },
+                                    tickLabels: { fontSize: 15, padding: 15 }
+                                }}
+                            />
+                            <VictoryPolarAxis dependentAxis
+                                width={400}
+                                height={400}
+                                domain={[0, 10]}
+                                standalone={false}
+                                axisAngle={180}
+                            />
+                            {Object.keys(covidGraphOne)?.map((key,index)=>{
+                                return(
+                                    <VictoryArea
+                                        key={index}
+                                        style={{
+                                            data: {
+                                                fill: covidGraphOne[key]?.color, fillOpacity: 0.5, stroke: "#626262", strokeWidth: 0.8
+                                            },
+                                            labels: {
+                                                fontSize: 2,
+                                                color: "#000"
+                                            },
+                                            parent: { border: "1px solid #000" },
+                                        }}
+                                        categories={{ x: ["communication", "mobility", "other activities", "personal care","social role"] }}
+                                        data={[
+                                            { x: 1, y: covidGraphOne[key]?.communication, y0: 10 },
+                                            { x: 2, y: covidGraphOne[key]?.mobility, y0: 0 },
+                                            { x: 3, y: covidGraphOne[key]?.other_activities_of_daily_living, y0: 0 },
+                                            { x: 4, y: covidGraphOne[key]?.personal_care, y0: 0 },
+                                            { x: 5, y: covidGraphOne[key]?.social_role, y0: 0 }
+                                        ]} />
+                                )
                             })}
-                        />
-                    </VictoryChart>
-                </LinearGradient>
-                <Title style={{marginBottom:10, marginTop:30}}>Symptoms Severity Score:</Title>
-                <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
-                    <VictoryChart polar
-                        theme={VictoryTheme.material}
-                        height={400}
-                        style={{
-                            parent: {
-                                border: "1px solid #ccc",
-                                marginLeft:-20,
-                                color:"#fff"
-                            }
-                        }}
-                    >
-                        <VictoryPolarAxis
-                            width={400}
+                            <VictoryLegend x={30} y={370}
+                                title=""
+                                centerTitle
+                                orientation="horizontal"
+                                gutter={20}
+                                style={{ title: { fontSize: 20 } }}
+                                data={Object.keys(covidGraphOne)?.map((key) => {
+                                    return {
+                                        name: [key], symbol: { fill: covidGraphOne[key]?.color }
+                                    }
+                                })}
+                            />
+                        </VictoryChart>
+                    </LinearGradient>
+                    <Title style={{marginBottom:10, marginTop:30}}>Symptoms Severity Score:</Title>
+                    <LinearGradient colors={['#D6D4D4', '#E4E2E2']} style={{ backgroundColor: "#fb8c00", borderRadius: 16 }}>
+                        <VictoryChart polar
+                            theme={VictoryTheme.material}
                             height={400}
-                            standalone={false}
-                            labelPlacement="perpendicular"
                             style={{
-                                grid: { stroke: "black" },
-                                tickLabels: { fontSize: 15, padding: 15 }
-                            }}
-                        />
-                        <VictoryPolarAxis dependentAxis
-                            width={400}
-                            height={400}
-                            domain={[0, 10]}
-                            axisAngle={180}
-                            standalone={false}
-                        />
-                        {Object.keys(covidGraphTwo)?.map((key,index)=>{
-                            return(
-                                <VictoryArea
-                                    key={index}
-                                    style={{
-                                        data: {
-                                            fill: covidGraphTwo[key]?.color, fillOpacity: 0.5, stroke: "#626262", strokeWidth: 0.8
-                                        },
-                                        labels: {
-                                            fontSize: 2,
-                                            color: "#000"
-                                        },
-                                        parent: { border: "1px solid #000" },
-                                    }}
-                                    categories={{ x: ["anxiety", "breathlessness", "cognition", "cough", "depression", "dizziness", "fatigue", "pain", "palpitation","ptsd"] }}
-                                    data={[
-                                        { x: 1, y: covidGraphTwo[key]?.anxiety, y0: 10 },
-                                        { x: 2, y: covidGraphTwo[key]?.breathlessness, y0: 0 },
-                                        { x: 3, y: covidGraphTwo[key]?.cognition, y0: 0 },
-                                        { x: 4, y: covidGraphTwo[key]?.cough_throat_sensitivity_voice_change, y0: 0 },
-                                        { x: 5, y: covidGraphTwo[key]?.depression, y0: 0 },
-                                        { x: 6, y: covidGraphTwo[key]?.dizziness, y0: 0 },
-                                        { x: 7, y: covidGraphTwo[key]?.fatigue, y0: 0 },
-                                        { x: 8, y: covidGraphTwo[key]?.pain_discomfort, y0: 0 },
-                                        { x: 9, y: covidGraphTwo[key]?.palpitation, y0: 0 },
-                                        { x: 10, y: covidGraphTwo[key]?.ptsd_screen, y0: 0 }
-                                    ]} />
-                            )
-                        })}
-                        <VictoryLegend x={30} y={370}
-                            title=""
-                            centerTitle
-                            orientation="horizontal"
-                            gutter={20}
-                            style={{ title: { fontSize: 20 } }}
-                            data={Object.keys(covidGraphTwo)?.map((key) => {
-                                return {
-                                    name: [key], symbol: { fill: covidGraphTwo[key]?.color }
+                                parent: {
+                                    border: "1px solid #ccc",
+                                    marginLeft:-20,
+                                    color:"#fff"
                                 }
+                            }}
+                        >
+                            <VictoryPolarAxis
+                                width={400}
+                                height={400}
+                                standalone={false}
+                                labelPlacement="perpendicular"
+                                style={{
+                                    grid: { stroke: "black" },
+                                    tickLabels: { fontSize: 15, padding: 15 }
+                                }}
+                            />
+                            <VictoryPolarAxis dependentAxis
+                                width={400}
+                                height={400}
+                                domain={[0, 10]}
+                                axisAngle={180}
+                                standalone={false}
+                            />
+                            {Object.keys(covidGraphTwo)?.map((key,index)=>{
+                                return(
+                                    <VictoryArea
+                                        key={index}
+                                        style={{
+                                            data: {
+                                                fill: covidGraphTwo[key]?.color, fillOpacity: 0.5, stroke: "#626262", strokeWidth: 0.8
+                                            },
+                                            labels: {
+                                                fontSize: 2,
+                                                color: "#000"
+                                            },
+                                            parent: { border: "1px solid #000" },
+                                        }}
+                                        categories={{ x: ["anxiety", "breathlessness", "cognition", "cough", "depression", "dizziness", "fatigue", "pain", "palpitation","ptsd"] }}
+                                        data={[
+                                            { x: 1, y: covidGraphTwo[key]?.anxiety, y0: 10 },
+                                            { x: 2, y: covidGraphTwo[key]?.breathlessness, y0: 0 },
+                                            { x: 3, y: covidGraphTwo[key]?.cognition, y0: 0 },
+                                            { x: 4, y: covidGraphTwo[key]?.cough_throat_sensitivity_voice_change, y0: 0 },
+                                            { x: 5, y: covidGraphTwo[key]?.depression, y0: 0 },
+                                            { x: 6, y: covidGraphTwo[key]?.dizziness, y0: 0 },
+                                            { x: 7, y: covidGraphTwo[key]?.fatigue, y0: 0 },
+                                            { x: 8, y: covidGraphTwo[key]?.pain_discomfort, y0: 0 },
+                                            { x: 9, y: covidGraphTwo[key]?.palpitation, y0: 0 },
+                                            { x: 10, y: covidGraphTwo[key]?.ptsd_screen, y0: 0 }
+                                        ]} />
+                                )
                             })}
-                        />
-                    </VictoryChart>
-                </LinearGradient>
-            </View> : null }
-            {tab === "Calories" ? <View>
-                <Title style={{marginTop:10}}>Calorie In-Take(kcal)</Title>
-                <Paragraph style={{marginTop:10}}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
-                {isLoadingCaloriesIntake ? <ActivityIndicator/> :<LineChart
-                    data={caloriesIntakeData}
-                    width={screenWidth} // from react-native
-                    height={220}
-                    chartConfig={CaloriesIntakeConfig}
-                    bezier
-                    style={{
-                        marginVertical:10,
-                        borderRadius: 16
-                    }}
-                />}
-                <Title style={{marginTop:30}}>Calories Burnt(kcal)</Title>
-                <Paragraph style={{ marginTop: 10 }}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
-                {isLoadingCaloriesBurnt ? <ActivityIndicator/> : <LineChart
-                    data={caloriesBurntData}
-                    width={screenWidth} // from react-native
-                    height={220}
-                    chartConfig={CaloriesBurntConfig}
-                    bezier
-                    style={{
-                        marginVertical:10,
-                        borderRadius: 16
-                    }}
-                />}
-            </View> : null }
-            {tab === "Sleep" ? <View>
-                <Paragraph style={{ marginTop: 10 }}>x-axis:mins | y-axis:Date(DD/MM)</Paragraph>
-                {isLoadingSleepGraph ? <ActivityIndicator /> : <LineChart
-                    data={sleepData}
-                    width={screenWidth} // from react-native
-                    height={220}
-                    chartConfig={sleepChartConfig}
-                    bezier
-                    style={{
-                        marginVertical: 10,
-                        borderRadius: 16
-                    }}
-                />}
-            </View> : null }
-        </ScrollView>
+                            <VictoryLegend x={30} y={370}
+                                title=""
+                                centerTitle
+                                orientation="horizontal"
+                                gutter={20}
+                                style={{ title: { fontSize: 20 } }}
+                                data={Object.keys(covidGraphTwo)?.map((key) => {
+                                    return {
+                                        name: [key], symbol: { fill: covidGraphTwo[key]?.color }
+                                    }
+                                })}
+                            />
+                        </VictoryChart>
+                    </LinearGradient>
+                </View> : null }
+                {tab === "Calories" ? <View>
+                    <Title style={{marginTop:10}}>Calorie In-Take(kcal)</Title>
+                    <Paragraph style={{marginTop:10}}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
+                    {isLoadingCaloriesIntake ? <ActivityIndicator/> :<LineChart
+                        data={caloriesIntakeData}
+                        width={screenWidth} // from react-native
+                        height={220}
+                        chartConfig={CaloriesIntakeConfig}
+                        bezier
+                        style={{
+                            marginVertical:10,
+                            borderRadius: 16
+                        }}
+                    />}
+                    <Title style={{marginTop:30}}>Calories Burnt(kcal)</Title>
+                    <Paragraph style={{ marginTop: 10 }}>x-axis:kcal | y-axis:Date(DD/MM)</Paragraph>
+                    {isLoadingCaloriesBurnt ? <ActivityIndicator/> : <LineChart
+                        data={caloriesBurntData}
+                        width={screenWidth} // from react-native
+                        height={220}
+                        chartConfig={CaloriesBurntConfig}
+                        bezier
+                        style={{
+                            marginVertical:10,
+                            borderRadius: 16
+                        }}
+                    />}
+                </View> : null }
+                {tab === "Sleep" ? <View>
+                    <Title style={{ marginBottom: 10}}>Sleep in mins:</Title>
+                    <Paragraph style={{ marginTop: 10 }}>x-axis:mins | y-axis:Date(DD/MM)</Paragraph>
+                    {isLoadingSleepGraph ? <ActivityIndicator /> : <LineChart
+                        data={sleepData}
+                        width={screenWidth} // from react-native
+                        height={220}
+                        chartConfig={sleepChartConfig}
+                        bezier
+                        style={{
+                            marginVertical: 10,
+                            borderRadius: 16
+                        }}
+                    />}
+                </View> : null }
+                {tab === "Inflamation" ? <View>
+                    <Title style={{ marginBottom: 10}}>Inflamation Score:</Title>
+                    <Paragraph style={{ marginTop: 10 }}>x-axis:inflamation score | y-axis:Date(DD/MM)</Paragraph>
+                    {isLoadingSleepGraph ? <ActivityIndicator /> : <LineChart
+                        data={{
+                            labels: ["01/12", "16/12", "22/12", "04/01", "13/01", "22/01"],
+                            datasets: [
+                                {
+                                    data: [
+                                        ((Math.random() * 100)%28).toFixed(0),
+                                        ((Math.random() * 100)%28).toFixed(0),
+                                        ((Math.random() * 100)%28).toFixed(0),
+                                        ((Math.random() * 100)%28).toFixed(0),
+                                        ((Math.random() * 100)%28).toFixed(0),
+                                        ((Math.random() * 100)%28).toFixed(0),
+                                        
+                                    ]
+                                }
+                            ]
+                        }}
+                        width={screenWidth} // from react-native
+                        height={220}
+                        chartConfig={inflamationChartConfig}
+                        bezier
+                        style={{
+                            marginVertical: 10,
+                            borderRadius: 16
+                        }}
+                    />}
+                </View> : null }
+            </ScrollView>
+        </View>
     );
 }
 

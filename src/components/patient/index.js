@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { ScrollView, View, Text, ActivityIndicator } from 'react-native';
-import { Button, IconButton, Colors } from 'react-native-paper';
+import { Button, IconButton, Colors, Avatar } from 'react-native-paper';
 import { useDispatch, useSelector } from "react-redux";
 import { useIsFocused } from '@react-navigation/native';
 import moment from 'moment';
@@ -186,31 +186,34 @@ export default PatientDashboard = (props) => {
 
     return (
         showQuestionaire ? <PatientQuestionaire profileDetails={profileDetails}/> : <View>
-            <ScrollView 
+            <Text style={{ fontWeight: "bold", color: "#000", marginVertical: 10, fontSize: 20, marginLeft:20 }}>{moment().format("Do MMM YYYY")}</Text>
+            <ScrollView horizontal contentContainerStyle={{ marginBottom:20, marginLeft:20, paddingRight:40}} showsHorizontalScrollIndicator={false}>
+                <TouchableOpacity style={tab === "Diet" ? styles.filterButtonSelected : styles.filterButton} onPress={() => setTab("Diet")}>
+                    <Avatar.Icon size={44} icon="food-apple" style={{ backgroundColor: tab === "Diet" ? "#3254be" : "#ecf6ff" }} color={tab === "Diet" ? "#fff" : "#79829e"}/>
+                    <Text style={{ fontWeight: "400", fontSize:18, color: tab === "Diet" ? "#fff" : "#79829e", marginRight:10, marginVertical: 6 }} >
+                        Diet
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={tab === "Supplements" ? [styles.filterButtonSelected, { marginLeft: 10 }] : [styles.filterButton, { marginLeft: 10 }]} onPress={() => setTab("Supplements")}>
+                    <Avatar.Icon size={44} icon="medical-bag" style={{ backgroundColor: tab === "Supplements" ? "#3254be" : "#ecf6ff" }} color={tab === "Supplements" ? "#fff" : "#79829e"} />
+                    <Text style={{ fontWeight: "400", fontSize: 18, color: tab === "Supplements" ? "#fff" : "#79829e", marginRight: 16, marginVertical: 6 }} >
+                        Supplements
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={tab === "SelfManagement" ? [styles.filterButtonSelected, { marginLeft: 10 }] : [styles.filterButton, { marginLeft: 10 }]} onPress={() => setTab("SelfManagement")}>
+                    <Avatar.Icon size={44} icon="dumbbell" style={{ backgroundColor: tab === "SelfManagement" ? "#3254be" : "#ecf6ff" }} color={tab === "SelfManagement" ? "#fff" : "#79829e"} />
+                    <Text style={{ fontWeight: "400", fontSize: 18, color: tab === "SelfManagement" ? "#fff" : "#79829e", marginRight: 16, marginVertical: 6 }} >
+                        Self Management
+                    </Text>
+                </TouchableOpacity>
+            </ScrollView>
+            <ScrollView
                 ref={ScrollViewRef}
                 onScroll={({ nativeEvent }) => {
                     setScrollY(nativeEvent?.contentOffset?.y)
                 }}
                 scrollEventThrottle={400}
-                contentContainerStyle={{marginTop: 20, marginHorizontal: 20, paddingBottom:200 }}>
-                <Text style={{ fontWeight: "bold", color: "#000", marginVertical: 10, fontSize: 20 }}>{moment().format("Do MMM YYYY")}</Text>
-                <View style={{flexDirection:'row',justifyContent:'flex-start', marginBottom:20}}>
-                    <TouchableOpacity style={tab === "Diet" ? styles.filterButtonSelected : styles.filterButton} onPress={() => setTab("Diet")}>
-                        <Text style={{ fontWeight: "400", color: tab === "Diet" ? "#fff" : "#79829e", marginHorizontal: 16, marginVertical: 6 }} >
-                            Diet
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={tab === "Supplements" ? [styles.filterButtonSelected, { marginLeft: 10 }] : [styles.filterButton, { marginLeft: 10 }]} onPress={() => setTab("Supplements")}>
-                        <Text style={{ fontWeight: "400", color: tab === "Supplements" ? "#fff" : "#79829e", marginHorizontal: 16, marginVertical: 6 }} >
-                            Supplements
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={tab === "SelfManagement" ? [styles.filterButtonSelected, { marginLeft: 10 }] : [styles.filterButton, { marginLeft: 10 }]} onPress={() => setTab("SelfManagement")}>
-                        <Text style={{ fontWeight: "400", color: tab === "SelfManagement"  ? "#fff" : "#79829e", marginHorizontal: 16, marginVertical: 6 }} >
-                            Self Management
-                        </Text>
-                    </TouchableOpacity>
-                </View>
+                contentContainerStyle={{ marginTop: 20, marginHorizontal: 20, paddingBottom: 200 }}>
                 {isLoadingGetProfile || isLoadingPatientMeal || isLoadingPatientSelfManagement || isDietLoading || isExerciseLoading || isSupplementsLoading ? <ActivityIndicator /> : <View>
                     {tab === "Diet" ? <View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: "#fff", padding: 10, borderRadius: 10, elevation: 3, borderColor: "#DBDBDB", borderWidth: 0.25 }}>
@@ -372,6 +375,8 @@ export default PatientDashboard = (props) => {
 
 const styles = {
     filterButton: {
+        flexDirection:'row',
+        justifyContent:'flex-start',
         borderRadius: 18,
         backgroundColor: "#ecf6ff",
         borderWidth: 1,
@@ -381,6 +386,8 @@ const styles = {
         alignItems: 'center'
     },
     filterButtonSelected: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
         borderRadius: 18,
         backgroundColor: "#3254be",
         borderWidth: 1,
